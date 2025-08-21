@@ -27,6 +27,7 @@ h1 {
     font-style: normal;
     font-size: 80px;
     color: rgb(38, 171, 69);
+    text-shadow: 0 0 5px rgba(54, 202, 88, 0.8), 0 0 10px rgba(54, 202, 88, 0.6), 0 0 20px rgba(54, 202, 88, 0.4), 0 0 30px rgba(54, 202, 88, 0.2);
 }
 
 h2 {
@@ -42,11 +43,25 @@ h2 {
 
 div {
     width: 500px;
-    border: 5px solid rgb(255, 255, 255);
     margin: 20px auto;
     padding: 20px;
     border-radius: 10px;
     background-color: rgb(0, 0, 0);
+    position: relative;
+    border: 5px solid rgb(255, 255, 255);
+}
+
+div::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 5px solid rgb(255, 255, 255);
+    border-radius: 10px;
+    filter: blur(3px);
+    z-index: -1;
 }
 
 p1 {
