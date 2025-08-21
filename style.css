@@ -1,0 +1,20 @@
+body {
+    background-color: rgb(0, 0, 0);
+}
+Title-Text {
+    font-family: "Fira Code", monospace;
+    font-optical-sizing: auto;
+    font-weight:700 ;
+    font-style: normal;
+    text-align:center;
+    font-size: 50px;
+}
+
+title {
+    font-family: "Fira Code", monospace;
+    font-optical-sizing: auto;
+    font-weight:500 ;
+    font-style: normal;
+    text-align:center;
+    font-size: 30px;
+}
