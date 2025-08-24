@@ -153,9 +153,8 @@ div.header.nav-section {
     flex-shrink: 0;
 }
 
-div.header a.button {
+div.header .button {
     display: inline-flex;
-    color: rgb(141, 255, 160);
     font-family: "Fira Code", monospace;
     font-size: 20px;
     margin-right: 20px;
@@ -166,11 +165,11 @@ div.header a.button {
     padding: 10px;
 }
 
-div.header a.button:hover {
+div.header .button:hover {
     color: rgba(0, 201, 20, 0.8) !important;
 }
 
-div.header a.button::before {
+div.header .button::before {
     content: '';
     position: absolute;
     top: -5px;
@@ -201,6 +200,17 @@ div.header a:hover {
     color: rgba(0, 201, 20, 0.8);
 }
 
+div.header b {
+    display: inline;
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    font-family: "Fira Code", monospace;
+    font-size: 20px;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 0 20px rgba(54, 202, 88, 0.8), 0 0 20px rgba(54, 202, 88, 0.6), 0 0 30px rgba(54, 202, 88, 0.4), 0 0 40px rgba(54, 202, 88, 0.2);
+}
 /*Link Text*/
 
 /*Image*/
