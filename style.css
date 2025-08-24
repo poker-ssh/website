@@ -223,3 +223,22 @@ div.header img {
 }
 /*Image*/
 /*Fixed Heading*/
+
+
+/* Github logo */
+.github-logo {
+    display: inline-block;
+    margin-left: 18px;
+    color: #fff;
+    transition: transform 0.15s, color 0.15s;
+    text-decoration: none;
+}
+.github-logo:hover {
+    color: #26ab45;
+    transform: scale(1.15) rotate(-8deg);
+}
+.github-logo:active {
+    color: #1a7a31;
+    transform: scale(0.95) rotate(4deg);
+}
+/* END Github logo */
