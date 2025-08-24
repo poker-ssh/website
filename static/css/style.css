@@ -57,6 +57,22 @@ h3 {
     font-size: 30px;
     color: rgb(38, 171, 69);
 }
+
+h3.Play-txt{
+    margin-bottom: 10px;
+}
+h4{
+    display: block;
+    text-align:center;
+    font-family: "Fira Code", monospace;
+    font-optical-sizing: auto;
+    font-weight:600 ;
+    font-style: normal;
+    font-size: 20px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    color: rgb(38, 171, 69);
+}
 /*Heading Text*/
 
 /*Info Box*/
