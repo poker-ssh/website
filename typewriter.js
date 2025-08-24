@@ -1,19 +1,40 @@
-const text = "This is Poker built with Python which you can access throught your terminal and play with others using SSH";
-const typewriterElement = document.getElementById('typewriter-text');
-let i = 0;
+function typeWriter(element, speed = 20) {
+    const text = element.textContent || element.innerText;
+    element.textContent = ''; // Clear the element
+    let i = 0;
 
-function typeWriter() {
-    if (i < text.length) {
-        typewriterElement.innerHTML += text.charAt(i);
-        i++;
-        setTimeout(typeWriter, 20);
-    } else {
-        // Stop the cursor blinking when typing is complete
-        typewriterElement.classList.add('typing-complete');
+    function type() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        } else {
+            // Stop the cursor blinking when typing is complete
+            element.classList.add('typing-complete');
+        }
     }
+
+    type();
 }
 
-// Start typing when page loads
-window.addEventListener('load', function() {
-    typeWriter();
-});
+// Function to initialize typewriter elements
+function initTypewriters() {
+    const typewriter = document.querySelectorAll('[typewriter="true"]');
+    
+    typewriter.forEach((element, index) => {
+        // Reset element content and remove any existing classes
+        element.classList.remove('typing-complete');
+        
+        // Start all typewriters at the same time
+        typeWriter(element);
+    });
+}
+
+// Initialize all typewriter elements when page loads
+window.addEventListener('load', initTypewriters);
+
+// Also initialize when DOM is ready (fallback)
+document.addEventListener('DOMContentLoaded', initTypewriters);
+
+// Initialize when page is shown from cache (for back button)
+window.addEventListener('pageshow', initTypewriters);

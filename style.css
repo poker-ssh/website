@@ -25,7 +25,8 @@ body::before {
 h1 {
     display: block;
     text-align:center;
-    margin-top: 150px;
+    margin-top: 120px;
+    margin-bottom: 0px;
     font-family: "Fira Code", monospace;
     font-optical-sizing: auto;
     font-weight:800 ;
@@ -43,6 +44,17 @@ h2 {
     font-weight:600 ;
     font-style: normal;
     font-size: 40px;
+    color: rgb(38, 171, 69);
+}
+
+h3 {
+    display: block;
+    text-align:center;
+    font-family: "Fira Code", monospace;
+    font-optical-sizing: auto;
+    font-weight:600 ;
+    font-style: normal;
+    font-size: 30px;
     color: rgb(38, 171, 69);
 }
 /*Heading Text*/
@@ -73,6 +85,32 @@ div.info-box::before {
 }
 /*Info Box*/
 
+/*ssh code box*/
+div.ssh-box {
+    height: 28px;
+    width: 450px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: rgb(0, 0, 0);
+    position: relative;
+    border: 5px solid rgba(0, 0, 0, 0);
+}
+
+div.ssh-box::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 5px solid rgb(255, 255, 255);
+    border-radius: 10px;
+    filter: blur(3px);
+    z-index: -1;
+}
+/*ssh code box*/
+
 /*Paragraph Text*/
 p1 {
     text-align: left;
@@ -96,6 +134,27 @@ p1.typing-complete::after {
     opacity: 0;
 }
 
+p2 {
+    text-align: center;
+    font-family: "Fira Code", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400 ;
+    font-style: normal;
+    font-size: 20px;
+    color: rgb(38, 171, 69);
+    display: block;
+}
+
+p2::after {
+    content: '|';
+    color: rgb(38, 171, 69);
+    animation: blink-cursor 0.75s step-end infinite;
+}
+
+p2.typing-complete::after {
+    animation: none;
+    opacity: 0;
+}
 @keyframes blink-cursor {
     from, to {
         opacity: 1;
@@ -130,7 +189,7 @@ div.header {
     padding: 30px !important;
     margin: 0 !important;
     border-radius: 0 !important;
-    background-color: rgba(19, 153, 32, 0.8) !important;
+    background-color: rgba(16, 122, 26, 0.8) !important;
     z-index: 9999 !important;
     box-sizing: border-box !important;
     min-height: 60px !important;
@@ -215,11 +274,11 @@ div.header b {
 
 /*Image*/
 div.header img {
-    height: 60px;
+    height: 80px;
     border-radius: 5px;
     width: auto;
     margin-top: -30px;
-    margin-bottom: -25px;
+    margin-bottom: -35px;
 }
 /*Image*/
 /*Fixed Heading*/
