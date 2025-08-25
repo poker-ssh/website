@@ -104,7 +104,7 @@ div.info-box::before {
 /*ssh code box*/
 div.ssh-box {
     height: 28px;
-    width: 430px;
+    width: 470px;
     margin: 20px auto;
     padding: 12px;
     border-radius: 10px;
@@ -146,28 +146,6 @@ p1::after {
 }
 
 p1.typing-complete::after {
-    animation: none;
-    opacity: 0;
-}
-
-p2 {
-    text-align: center;
-    font-family: "Fira Code", monospace;
-    font-optical-sizing: auto;
-    font-weight: 400 ;
-    font-style: normal;
-    font-size: 20px;
-    color: rgb(38, 171, 69);
-    display: block;
-}
-
-p2::after {
-    content: '|';
-    color: rgb(38, 171, 69);
-    animation: blink-cursor 0.75s step-end infinite;
-}
-
-p2.typing-complete::after {
     animation: none;
     opacity: 0;
 }
