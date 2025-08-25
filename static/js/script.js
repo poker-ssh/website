@@ -152,9 +152,63 @@ window.addEventListener('load', () => {
     createControls();
     bindKeyboardShortcuts();
     ensureLogoLink();
+    bindLogoHoverFallback();
 });
 
 // If DOMContentLoaded already fired, ensure controls exist
 if (document.readyState === 'interactive' || document.readyState === 'complete') {
     createControls();
+    bindLogoHoverFallback();
 }
+
+// Fallback: toggle a class on hover/touch to force the tentacle animation.
+function bindLogoHoverFallback() {
+    const logos = document.querySelectorAll('.github-logo');
+    if (!logos || logos.length === 0) return;
+
+    logos.forEach((logo) => {
+        // ensure listeners aren't added twice
+        if (logo._logoHoverBound) return;
+        const group = logo.querySelector('.octo-tentacle-group');
+        if (!group) return;
+
+        logo.addEventListener('mouseenter', () => group.classList.add('tentacle-wave-active'));
+        logo.addEventListener('mouseleave', () => group.classList.remove('tentacle-wave-active'));
+
+        // touch: toggle briefly on touchstart to simulate a wave
+        logo.addEventListener('touchstart', (ev) => {
+            ev.preventDefault();
+            if (group.classList.contains('tentacle-wave-active')) {
+                group.classList.remove('tentacle-wave-active');
+            } else {
+                group.classList.add('tentacle-wave-active');
+                setTimeout(() => group.classList.remove('tentacle-wave-active'), 900);
+            }
+        }, { passive: false });
+
+        logo._logoHoverBound = true;
+    });
+}
+
+// also bind the corner (top-right) octo-arm for touch/hover fallback
+function bindCornerFallback() {
+    const corners = document.querySelectorAll('.site-github-corner');
+    if (!corners || corners.length === 0) return;
+    corners.forEach((corner) => {
+        if (corner._cornerBound) return;
+        const arm = corner.querySelector('.octo-arm');
+        if (!arm) return;
+        corner.addEventListener('mouseenter', () => arm.classList.add('tentacle-wave-active'));
+        corner.addEventListener('mouseleave', () => arm.classList.remove('tentacle-wave-active'));
+        corner.addEventListener('touchstart', (ev) => {
+            ev.preventDefault();
+            arm.classList.add('tentacle-wave-active');
+            setTimeout(() => arm.classList.remove('tentacle-wave-active'), 900);
+        }, { passive: false });
+        corner._cornerBound = true;
+    });
+}
+
+// call corner binder as well
+window.addEventListener('load', bindCornerFallback);
+if (document.readyState === 'interactive' || document.readyState === 'complete') bindCornerFallback();
