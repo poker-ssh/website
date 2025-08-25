@@ -100,7 +100,8 @@ function showToast(message, timeout = 2200) {
 }
 
 async function copySSH(sshBox) {
-    const cmdElem = sshBox.querySelector('p2') || sshBox;
+    // Prefer a dedicated .ssh-cmd element (code), fall back to any text node inside sshBox
+    const cmdElem = sshBox.querySelector('.ssh-cmd') || sshBox.querySelector('[typewriter="true"]') || sshBox;
     const text = cmdElem.innerText || cmdElem.textContent;
     try {
         await navigator.clipboard.writeText(text.trim());
@@ -156,5 +157,4 @@ window.addEventListener('load', () => {
 // If DOMContentLoaded already fired, ensure controls exist
 if (document.readyState === 'interactive' || document.readyState === 'complete') {
     createControls();
-    // theme removed
 }

@@ -73,18 +73,32 @@ h4{
     margin-top: 0px;
     color: rgb(38, 171, 69);
 }
+
+/* copy instruction (<p> used instead of <h4>)*/
+.copy-instruction {
+    display: block;
+    text-align: center;
+    font-family: "Fira Code", monospace;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0;
+    color: rgb(38,171,69);
+}
 /*Heading Text*/
 
 /*Info Box*/
 div.info-box {
-    height: 56px;
+    min-height: 56px;
     width: 750px;
     margin: 20px auto;
-    padding: 20px;
+    padding: 12px 20px;
     border-radius: 10px;
     background-color: rgb(0, 0, 0);
     position: relative;
     border: 5px solid rgba(0, 0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 div.info-box::before {
@@ -127,8 +141,10 @@ div.ssh-box::before {
 }
 /*ssh code box*/
 
-/*Paragraph Text*/
-p1 {
+/* Typewriter target: apply to any element with the attribute typewriter="true" 
+VERY VERY VERY VERY VERY IMPORTANT
+*/
+[typewriter="true"] {
     text-align: left;
     font-family: "Fira Code", monospace;
     font-optical-sizing: auto;
@@ -139,41 +155,54 @@ p1 {
     display: block;
 }
 
-p1::after {
-    content: '|';
-    color: rgb(38, 171, 69);
-    animation: blink-cursor 0.75s step-end infinite;
+/* Centre/center typewriter text when inside the .info-box */
+.info-box [typewriter="true"] {
+    text-align: center;
+    margin: 0;
 }
 
-p1.typing-complete::after {
+/* Handle long text gracefully: wrap and allow scrolling if content gets too tall */
+.info-box {
+    /* auto-resize with content */
+    height: auto;
+}
+
+.info-box [typewriter="true"] {
+    white-space: normal;       /* allow wrapping */
+    overflow-wrap: anywhere;   /* break long words/URLs */
+    word-break: break-word;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    .info-box { width: calc(100% - 32px); }
+}
+
+[typewriter="true"]::after {
+    content: '|';
+    color: rgb(38, 171, 69);
+
+
+/* Keyframes for blinking cursor animation */
+@keyframes blink-cursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+[typewriter="true"].typing-complete::after {
     animation: none;
     opacity: 0;
 }
-@keyframes blink-cursor {
-    from, to {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0;
-    }
-}
-/*Paragraph Text*/
 
-/*Link Text*/
-a {
+/* SSH command styling */
+.ssh-cmd {
     display: block;
-    text-align:center;
+    text-align: center;
     font-family: "Fira Code", monospace;
-    font-optical-sizing: auto;
-    font-weight:600 ;
-    font-style: normal;
-    font-size: 30px;
-    color: rgb(38, 171, 69);
-    color: rgb(38, 171, 69);
+    font-size: 20px;
+    color: rgb(38,171,69);
 }
-/*Link Text*/
 
-/*Fixed Heading*/
 /*Box*/
 div.header {
     position: fixed !important;
