@@ -90,7 +90,7 @@ h4{
 div.info-box {
     min-height: 56px;
     width: 750px;
-    margin: 20px auto;
+    margin: 10px auto;
     padding: 12px 20px;
     border-radius: 10px;
     background-color: rgb(0, 0, 0);
@@ -168,7 +168,7 @@ VERY VERY VERY VERY VERY IMPORTANT
 }
 
 .info-box [typewriter="true"] {
-    white-space: normal;       /* allow wrapping */
+    white-space: pre-line;     /* preserve line breaks */
     overflow-wrap: anywhere;   /* break long words/URLs */
     word-break: break-word;
     width: 100%;
