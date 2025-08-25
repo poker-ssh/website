@@ -317,3 +317,59 @@ div.header img {
     transform: scale(0.95) rotate(4deg);
 }
 /* END Github logo */
+
+/* interactive controls: copy button, toast, theme toggle (to-do) */
+.ssh-box { position: relative; }
+
+.copy-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(38,171,69,0.06);
+    border: 1px solid rgba(38,171,69,0.25);
+    color: rgb(38,171,69);
+    font-family: "Fira Code", monospace;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.12s, background 0.12s, box-shadow 0.12s;
+    backdrop-filter: blur(4px);
+    z-index: 5;
+}
+.copy-btn:hover { transform: translateY(-50%) scale(1.03); background: rgba(38,171,69,0.08); }
+.copy-btn:active { transform: translateY(-50%) scale(0.98); }
+.copy-btn:focus { outline: 2px dashed rgba(38,171,69,0.6); outline-offset: 2px; }
+
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 40px;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.9);
+    color: #bfffc9;
+    padding: 10px 16px;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    font-family: "Fira Code", monospace;
+    z-index: 20000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease, transform 220ms ease;
+}
+.toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(-6px); }
+
+/* Responsive */
+@media (max-width: 720px) {
+    h1 { font-size: 42px; margin-top: 80px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 18px; }
+    div.info-box { width: calc(100% - 48px); }
+    div.ssh-box { width: calc(100% - 48px); }
+    div.header img { height: 56px; margin-top: 0; margin-bottom: 0; }
+    .copy-btn { right: 8px; padding: 6px 8px; }
+}
+
+/* small focus improvements for KBD users */
+a:focus, .copy-btn:focus { box-shadow: 0 0 0 3px rgba(38,171,69,0.12); }
