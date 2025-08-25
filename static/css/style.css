@@ -182,7 +182,10 @@ VERY VERY VERY VERY VERY IMPORTANT
 [typewriter="true"]::after {
     content: '|';
     color: rgb(38, 171, 69);
-
+    margin-left: 8px;
+    /* simple blinking cursor */
+    animation: blink-cursor 1s steps(1) infinite;
+}
 
 /* Keyframes for blinking cursor animation */
 @keyframes blink-cursor {
@@ -336,6 +339,62 @@ div.header img {
 .github-logo:active {
     color: #1a7a31;
     transform: scale(0.95) rotate(4deg);
+}
+/* animated tentacle */
+.github-svg { display: inline-block; }
+/* Use SVG transform-box so transform-origin is interpreted in SVG coordinates */
+.octo-tentacle,
+.octo-tentacle-group {
+    transform-box: fill-box;
+    /* origin near the base of the tentacle (in % of the element's box) */
+    transform-origin: 75% 40%;
+}
+.octo-tentacle { transition: transform 220ms ease; }
+.octo-tentacle-group { display: inline-block; }
+
+@keyframes tentacle-wave {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(12deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-10deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.github-logo:hover .octo-tentacle-group { animation: tentacle-wave 800ms ease-in-out infinite; }
+
+/* make animation optional for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .github-logo:hover .octo-tentacle-group { animation: none; }
+}
+
+/* JS-toggled class to trigger tentacle wave (fallback for touch or non-hover environments) */
+.octo-tentacle-group.tentacle-wave-active { animation: tentacle-wave 800ms ease-in-out infinite; }
+
+/* GitHub corner (top-right) */
+.site-github-corner {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    z-index: 100000;
+    color: #151513; /* octocat color */
+    text-decoration: none;
+}
+.site-github-corner svg { display: block; }
+.site-github-corner .octo-arm { transform-origin: 130px 106px; }
+.site-github-corner:hover .octo-arm,
+.site-github-corner .octo-arm.tentacle-wave-active {
+    animation: octocat-wave 560ms ease-in-out;
+}
+@keyframes octocat-wave {
+    0%,100% { transform: rotate(0deg); }
+    20%,60% { transform: rotate(-25deg); }
+    40%,80% { transform: rotate(10deg); }
+}
+@media (max-width: 500px) {
+    .site-github-corner:hover .octo-arm { animation: none; }
+    .site-github-corner .octo-arm { animation: octocat-wave 560ms ease-in-out; }
 }
 /* END Github logo */
 
