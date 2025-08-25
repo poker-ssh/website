@@ -278,16 +278,30 @@ div.header a:hover {
     color: rgba(0, 201, 20, 0.8);
 }
 
-div.header b {
-    display: inline;
-    color: rgb(255, 255, 255);
+div.header a.base {
+    display: inline-flex !important;
+    color: rgb(255, 255, 255) !important;
     text-decoration: none;
     font-family: "Fira Code", monospace;
     font-size: 20px;
-    margin: 0;
+    margin: 0 20px 0 0;
     position: relative;
-    z-index: 2;
+    z-index: 10;
+    min-width: 100px;
+    justify-content: center;
+    padding: 10px;
     text-shadow: 0 0 20px rgba(54, 202, 88, 0.8), 0 0 20px rgba(54, 202, 88, 0.6), 0 0 30px rgba(54, 202, 88, 0.4), 0 0 40px rgba(54, 202, 88, 0.2);
+}
+
+div.header a.base:hover {
+    color: rgba(0, 201, 20, 0.8) !important;
+}
+
+div.header a.base::before {
+    content: '';
+    position: absolute;
+    border: 2px solid rgb(38, 171, 69);
+    border-radius: 5px;
 }
 /*Link Text*/
 
