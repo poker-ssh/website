@@ -117,7 +117,7 @@ div.info-box::before {
 
 /*ssh code box*/
 div.ssh-box {
-    height: 28px;
+    height: 25px;
     width: 470px;
     margin: 20px auto;
     padding: 12px;
@@ -145,7 +145,7 @@ div.ssh-box::before {
 VERY VERY VERY VERY VERY IMPORTANT
 */
 [typewriter="true"] {
-    text-align: left;
+   text-align: left;
     font-family: "Fira Code", monospace;
     font-optical-sizing: auto;
     font-weight: 400 ;
@@ -200,7 +200,7 @@ VERY VERY VERY VERY VERY IMPORTANT
 /* SSH command styling */
 .ssh-cmd {
     display: block;
-    text-align: center;
+    text-align: left;
     font-family: "Fira Code", monospace;
     font-size: 20px;
     color: rgb(38,171,69);
@@ -240,7 +240,7 @@ div.header.nav-section {
 
 div.header .button {
     display: inline-flex;
-    font-family: "Fira Code", monospace;
+    font-family: "Fira Code", monospace !important;
     font-size: 20px;
     margin-right: 20px;
     position: relative;
@@ -275,6 +275,7 @@ div.header a {
     color: rgb(141, 255, 160);
     text-decoration: none;
     font-family: "Fira Code", monospace;
+    font-weight: 600;
     font-size: 20px;
     margin: 0;
     position: relative;
@@ -291,6 +292,7 @@ div.header a.base {
     text-decoration: none;
     font-family: "Fira Code", monospace;
     font-size: 20px;
+    font-weight: 600;
     margin: 0 20px 0 0;
     position: relative;
     z-index: 10;
@@ -310,6 +312,7 @@ div.header a.base::before {
     border: 2px solid rgb(38, 171, 69);
     border-radius: 5px;
 }
+
 /*Link Text*/
 
 /*Image*/
