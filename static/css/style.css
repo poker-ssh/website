@@ -291,6 +291,7 @@ div.header a.base {
     text-decoration: none;
     font-family: "Fira Code", monospace;
     font-size: 20px;
+    font-weight: 600;
     margin: 0 20px 0 0;
     position: relative;
     z-index: 10;
