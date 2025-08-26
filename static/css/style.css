@@ -73,6 +73,18 @@ h4{
     margin-top: 0px;
     color: rgb(38, 171, 69);
 }
+h5{
+    display: block;
+    text-align:center;
+    font-family: "Fira Code", monospace;
+    font-optical-sizing: auto;
+    font-weight:400 ;
+    font-style: normal;
+    font-size: 15px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    color: rgb(38, 171, 69);
+}
 
 /* copy instruction (<p> used instead of <h4>)*/
 .copy-instruction {
