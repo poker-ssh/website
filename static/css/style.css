@@ -168,7 +168,7 @@ VERY VERY VERY VERY VERY IMPORTANT
 }
 
 .info-box [typewriter="true"] {
-    white-space: normal;       /* allow wrapping */
+    white-space: pre-line;
     overflow-wrap: anywhere;   /* break long words/URLs */
     word-break: break-word;
     width: 100%;
@@ -275,6 +275,7 @@ div.header a {
     color: rgb(141, 255, 160);
     text-decoration: none;
     font-family: "Fira Code", monospace;
+    font-weight: 600; /*STOP'Y CHANGE'Y THE'Y CODE'Y*/
     font-size: 20px;
     margin: 0;
     position: relative;
