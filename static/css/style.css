@@ -118,7 +118,7 @@ div.info-box::before {
 /*ssh code box*/
 div.ssh-box {
     height: 28px;
-    width: 470px;
+    width: 530px;
     margin: 20px auto;
     padding: 12px;
     border-radius: 10px;
