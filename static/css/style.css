@@ -18,6 +18,8 @@ body::before {
     background-attachment: fixed;
     filter: blur(7px);
     z-index: -1;
+    will-change: transform;
+    transform: translateZ(0);
 }
 /*Main Body*/
 
@@ -126,6 +128,13 @@ div.info-box::before {
     z-index: -1;
 }
 /*Info Box*/
+
+/*Guide formatting code*/
+h2.HTP_poker { margin-bottom: 0px; }
+h3.HTP_poker { margin-bottom: 5px; }
+div.info-box.stages { margin-top: 10px; }
+.info-box.stages { text-align: center; }
+/*Guide formatting code*/
 
 /*ssh code box*/
 div.ssh-box {
