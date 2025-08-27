@@ -1,16 +1,37 @@
 let isInitialized = false;
 let activeTimeouts = [];
 
-function typeWriter(element, speed = 20) {
+function typeWriter(element, initialSpeed = 20) {
     const text = element.textContent || element.innerText;
     element.textContent = ''; // Clear the element
     let i = 0;
-
+    let currentSpeed = initialSpeed;
+    const startTime = Date.now();
+    
     function type() {
         if (i < text.length) {
             element.textContent += text.charAt(i);
             i++;
-            const timeoutId = setTimeout(type, speed);
+            
+            // Calculate time elapsed since start
+            const elapsedTime = Date.now() - startTime;
+            
+            // Speed up based on time intervals
+            if (elapsedTime > 15000) {
+                // After 15 seconds, very fast
+                currentSpeed = Math.max(5, initialSpeed * 0.2);
+            } else if (elapsedTime > 10000) {
+                // After 10 seconds, faster
+                currentSpeed = Math.max(8, initialSpeed * 0.4);
+            } else if (elapsedTime > 5000) {
+                // After 5 seconds, speed up
+                currentSpeed = Math.max(12, initialSpeed * 0.6);
+            } else {
+                // First 5 seconds, original speed
+                currentSpeed = initialSpeed;
+            }
+            
+            const timeoutId = setTimeout(type, currentSpeed);
             activeTimeouts.push(timeoutId);
         } else {
             // Stop the cursor blinking when typing is complete
