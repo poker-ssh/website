@@ -172,7 +172,7 @@ VERY VERY VERY VERY VERY IMPORTANT
 
 /* Centre/center typewriter text when inside the .info-box */
 .info-box [typewriter="true"] {
-    text-align: center;
+    text-align: left;
     margin: 0;
 }
 
