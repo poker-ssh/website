@@ -2,20 +2,117 @@ let isInitialized = false;
 let activeTimeouts = [];
 
 function typeWriter(element, initialSpeed = 20) {
-    const text = element.textContent || element.innerText;
-    element.textContent = '';
+    const originalText = element.textContent || element.innerText;
+    
+    // Pre-process the text to add color spans for all suits
+    const coloredText = originalText.replace(/♦/g, '<span style="color: #ff4444;">♦</span>')
+                                  .replace(/♥/g, '<span style="color: #ff4444;">♥</span>')
+                                  .replace(/♠/g, '<span style="color: #000000; -webkit-text-stroke: 0.3px white; text-stroke: 0.3px white;">♠</span>')
+                                  .replace(/♣/g, '<span style="color: #000000; -webkit-text-stroke: 0.3px white; text-stroke: 0.3px white;">♣</span>');
+    
+    // Parse the HTML to get segments of text and HTML tags
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = coloredText;
+    
+    // Extract all text nodes and tags in order
+    const segments = [];
+    function walkNodes(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            // Add each character as a separate segment
+            const text = node.textContent;
+            for (let i = 0; i < text.length; i++) {
+                segments.push({
+                    type: 'text',
+                    content: text[i],
+                    html: text[i]
+                });
+            }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            // Add opening tag
+            const tagName = node.tagName.toLowerCase();
+            const style = node.getAttribute('style');
+            const openTag = `<${tagName}${style ? ` style="${style}"` : ''}>`;
+            
+            // Process children to get their content
+            let childContent = '';
+            for (let child of node.childNodes) {
+                if (child.nodeType === Node.TEXT_NODE) {
+                    childContent += child.textContent;
+                }
+            }
+            
+            // Add the complete styled element as one segment
+            segments.push({
+                type: 'styled',
+                content: childContent,
+                html: openTag + childContent + `</${tagName}>`
+            });
+        }
+    }
+    
+    // If no HTML styling needed, use simple text approach
+    if (coloredText === originalText) {
+        element.textContent = '';
+        let i = 0;
+        const startTime = Date.now();
+        
+        function typeSimple() {
+            if (i < originalText.length) {
+                element.textContent += originalText.charAt(i);
+                i++;
+                
+                const elapsedTime = Date.now() - startTime;
+                let currentSpeed;
+                
+                if (elapsedTime > 3000) {
+                    currentSpeed = Math.max(5, initialSpeed * 0.2);
+                } else if (elapsedTime > 1500) {
+                    currentSpeed = Math.max(10, initialSpeed * 0.5);
+                } else if (elapsedTime > 500) {
+                    currentSpeed = Math.max(15, initialSpeed * 0.7);
+                } else {
+                    currentSpeed = initialSpeed;
+                }
+                
+                const timeoutId = setTimeout(typeSimple, currentSpeed);
+                activeTimeouts.push(timeoutId);
+            } else {
+                element.classList.add('typing-complete');
+            }
+        }
+        
+        typeSimple();
+        return;
+    }
+    
+    // Parse nodes for HTML content
+    for (let child of tempDiv.childNodes) {
+        walkNodes(child);
+    }
+    
+    element.innerHTML = '';
     let i = 0;
     const startTime = Date.now();
+    let currentHtml = '';
     
     function type() {
-        if (i < text.length) {
-            element.textContent += text.charAt(i);
+        if (i < segments.length) {
+            const segment = segments[i];
+            
+            if (segment.type === 'styled') {
+                // Add the complete styled element at once
+                currentHtml += segment.html;
+            } else {
+                // Add regular text character
+                currentHtml += segment.content;
+            }
+            
+            element.innerHTML = currentHtml;
             i++;
             
             const elapsedTime = Date.now() - startTime;
             let currentSpeed;
             
-            // Speed up much earlier with smoother progression
             if (elapsedTime > 3000) {
                 currentSpeed = Math.max(5, initialSpeed * 0.2);
             } else if (elapsedTime > 1500) {
@@ -35,6 +132,8 @@ function typeWriter(element, initialSpeed = 20) {
 
     type();
 }
+
+// Remove the separate colorRedSuits function since it's now integrated
 
 // Function to clear all active timeouts
 function clearActiveTimeouts() {

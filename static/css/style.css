@@ -132,8 +132,40 @@ div.info-box::before {
 /*Guide formatting code*/
 h2.HTP_poker { margin-bottom: 0px; }
 h3.HTP_poker { margin-bottom: 5px; }
-div.info-box.stages { margin-top: 10px; }
+div.info-box.stages { 
+    margin-top: 10px; 
+    align-items: flex-start;
+}
 .info-box.stages { text-align: center; }
+
+/* Unique heights for each guide section - calculated with 24px padding + (lines × 26px) */
+div.info-box.stages#terminology { height: 185px !important; } /* Terminology - 8 wrapped lines: 24 + (8 × 26) = 232px */
+div.info-box.stages#handrankings { height: 770px !important; } /* Hand Rankings - 29 lines: 24 + (29 × 26) = 778px */
+div.info-box.stages#stages { height: 56px !important; } /* Stages - 2 lines: 24 + (2 × 26) = 76px */
+div.info-box.stages#preflop { height: 240px !important; } /* Pre-flop - 8 wrapped lines: 24 + (8 × 26) = 232px */
+div.info-box.stages#flop { height: 108px !important; } /* Flop - 3 wrapped lines: 24 + (3 × 26) = 102px */
+div.info-box.stages#turn { height: 82px !important; } /* Turn - 3 wrapped lines: 24 + (3 × 26) = 102px */
+div.info-box.stages#river { height: 82px !important; } /* River - 3 wrapped lines: 24 + (3 × 26) = 102px */
+div.info-box.stages#showdown { height: 162px !important; } /* Showdown - 6 wrapped lines: 24 + (6 × 26) = 180px */
+
+/* Center text specifically for the stages overview box */
+div.info-box.stages#stages [typewriter="true"] { 
+    text-align: center !important; 
+}
+
+/* Restore glowing effect for stages boxes */
+div.info-box.stages::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 5px solid rgb(255, 255, 255);
+    border-radius: 10px;
+    filter: blur(3px);
+    z-index: -1;
+}
 /*Guide formatting code*/
 
 /*ssh code box*/
@@ -187,9 +219,11 @@ VERY VERY VERY VERY VERY IMPORTANT
 
 /* Handle long text gracefully: wrap and allow scrolling if content gets too tall */
 .info-box {
-    /* auto-resize with content */
-    height: auto;
+    /* auto-resize with content for non-stages boxes */
+    min-height: 56px;
 }
+
+/* Stages boxes will use fixed heights set by individual ID selectors below */
 
 .info-box [typewriter="true"] {
     white-space: pre-line;

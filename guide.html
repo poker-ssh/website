@@ -3,9 +3,6 @@
     <head>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
-            
-            /* Make diamond symbols red */
-            .red-suit {color: #ff4444;}
         </style>
 
         <link rel="stylesheet" href="static/css/style.css"/>
@@ -42,55 +39,87 @@
         <h2 class="HTP_poker">How To Play - Poker</h2>
         <h5>This game my be slightly different to normal poker</h5>
 
-        <h3 class="HTP_poker">Terminology</h3>
+        <h2 class="HTP_poker">Terminology</h2>
 
-        <div class="info-box stages">
+        <div class="info-box stages" id="terminology">
             <p typewriter="true">Check: Pass the action to the next person
             Bet __: The first bet in a betting phase
             Raise __: Betting more money than the initial bet or raise
             Fold: Forfeit your hand
             Call: To bet the same amount as the highest bet
-            Pot: All the money that was betted in the betting phases
-            All in: Betting all the money you have.</p>
+            Pot: All the money that was betted in all the betting phases
+            All in: Betting all the money you have</p>
         </div>
 
-        <h3 class="HTP_poker">Stages</h3>
+        <h2 class="HTP_poker">Hand Rankings</h2>
+
+        <div class="info-box stages" id="handrankings">
+            <p typewriter="true">From best to worst:
+            Royal Flush: 10, J, Q, K, A all of the same suit as a straight
+            Example: [10♦] [J♦] [Q♦] [K♦] [A♦]
+
+            Straight Flush: Five cards in sequence, all same suit
+            Example: [5♠] [6♠] [7♠] [8♠] [9♠]
+
+            Four of a Kind: Four cards of same rank
+            Example: [7♠] [7♦] [7♥] [7♣]
+
+            Full House: Three of a kind + pair
+            Example: [5♦] [5♠] [9♣] [9♠] [9♥]
+
+            Flush: Five cards of same suit
+            Example: [4♠] [Q♠] [A♠] [7♠] [9♠]
+
+            Straight: Five cards in sequence
+            Example: [8♥] [9♣] [10♦] [J♠] [Q♠]
+
+            Three of a Kind: Three cards of same rank
+            Example: [K♠] [K♥] [K♣]
+
+            Two Pair: Two different pairs
+            Example: [3♦] [3♣] [6♥] [6♣] 
+
+            Pair: Two cards of same rank
+            Example: [J♥] [J♠] 
+
+            High Card: Highest card wins</p>
+        </div>
+
+        <h2 class="HTP_poker">Stages</h2>
         
-        <div class="info-box stages">
+        <div class="info-box stages" id="stages">
             <p typewriter="true">Poker has 5 stages:
             Pre-flop, Flop, Turn, River and Showdown</p>
         </div>
 
         <h3 class="HTP_poker">Pre-flop</h3>
 
-        <div class="info-box stages">
+        <div class="info-box stages" id="preflop">
             <p typewriter="true">This is the start of the game where everyone is given 2 cards (a hand). With these 2 cards, in the future, you would need to make the best hand out of a maxaimim of 5 cards using the community cards (flop, turn, river). After being deal the hand, a betting phase occurs where everyone needs to put in money. The first person has to bet a minimum of $1 and everyone else need to either call raise or fold. At the end of the betting phase, everyone should of betted the same amount except for anyone that has folded.</p>
         </div>
 
         <h3 class="HTP_poker">Flop</h3>
 
-        <div class="info-box stages">
-            <p typewriter="true">Following the pre-flop comes the flop, where the dealer will reveal 3 of the 5 community cards. Then another betting phase occurs but instead of there being a minimum bet of $1, you are given an option to check, bet or fold.</p>
+        <div class="info-box stages" id="flop">
+            <p typewriter="true">Following the Pre-Flop comes the Flop where the dealer will reveal 3 of the 5 community cards. Then another betting phase occurs but instead of there being a minimum bet of $1, you are given an option to check, bet or fold.</p>
         </div>
 
         <h3 class="HTP_poker">Turn</h3>
 
-        <div class="info-box stages">
-            <p typewriter="true">Next come the turn where the dealer will show the 4th card of the 5 community cards. Again, another betting phase occurs with the same rules as the betting phase in the flop</p>
+        <div class="info-box stages" id="turn">
+            <p typewriter="true">Next come the Turn where the dealer will show the 4th card of the 5 community cards. Again, another betting phase occurs with the same rules as the betting phase in the flop.</p>
         </div>
 
         <h3 class="HTP_poker">River</h3>
 
-        <div class="info-box stages">
-            <p typewriter="true">Afterwards comes the river where the dealer will show the 5th and last community card that you can me your best hand with. The last betting phase of the round occurs.</p>
+        <div class="info-box stages" id="river">
+            <p typewriter="true">Afterwards comes the River where the dealer will show the 5th and last community card that you can me your best hand with. The last betting phase of the round occurs.</p>
         </div>
 
         <h3 class="HTP_poker">Showdown</h3>
 
-        <div class="info-box stages">
-            <p typewriter="true"></p>
+        <div class="info-box stages" id="showdown">
+            <p typewriter="true">After all the stages the last stage is the showdown. In the showdown, everyone shows their cards and who ever has the best hand wins the entire pot. If 2 or more people have the same hand (eg. 2 people has both King and Queen two pair (no matter the suit)) the pot will be split between the people with the same hand.</p>
         </div>
-        
-        <h2>How To Play - Poker on SSH</h2>
     </body>
 </html>
