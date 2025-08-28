@@ -3,9 +3,8 @@ let activeTimeouts = [];
 
 function typeWriter(element, initialSpeed = 20) {
     const text = element.textContent || element.innerText;
-    element.textContent = ''; // Clear the element
+    element.textContent = '';
     let i = 0;
-    let currentSpeed = initialSpeed;
     const startTime = Date.now();
     
     function type() {
@@ -13,28 +12,23 @@ function typeWriter(element, initialSpeed = 20) {
             element.textContent += text.charAt(i);
             i++;
             
-            // Calculate time elapsed since start
             const elapsedTime = Date.now() - startTime;
+            let currentSpeed;
             
-            // Speed up based on time intervals
-            if (elapsedTime > 15000) {
-                // After 15 seconds, very fast
+            // Speed up much earlier with smoother progression
+            if (elapsedTime > 3000) {
                 currentSpeed = Math.max(5, initialSpeed * 0.2);
-            } else if (elapsedTime > 10000) {
-                // After 10 seconds, faster
-                currentSpeed = Math.max(8, initialSpeed * 0.4);
-            } else if (elapsedTime > 5000) {
-                // After 5 seconds, speed up
-                currentSpeed = Math.max(12, initialSpeed * 0.6);
+            } else if (elapsedTime > 1500) {
+                currentSpeed = Math.max(10, initialSpeed * 0.5);
+            } else if (elapsedTime > 500) {
+                currentSpeed = Math.max(15, initialSpeed * 0.7);
             } else {
-                // First 5 seconds, original speed
                 currentSpeed = initialSpeed;
             }
             
             const timeoutId = setTimeout(type, currentSpeed);
             activeTimeouts.push(timeoutId);
         } else {
-            // Stop the cursor blinking when typing is complete
             element.classList.add('typing-complete');
         }
     }
