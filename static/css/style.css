@@ -153,7 +153,7 @@ div.info-box.stages#showdown { height: 162px !important; } /* Showdown - 6 wrapp
 
 /* About page sections */
 div.info-box.stages#inspiration { height: 505px !important; } /* Inspiration - 15 wrapped lines: 24 + (15 × 26) = 414px */
-div.info-box.stages#credit { height: 240px !important; } /* Credit - 9 wrapped lines: 24 + (9 × 26) = 258px */
+div.info-box.stages#credit { height: 268px !important; } /* Credit - 9 wrapped lines: 24 + (9 × 26) = 258px */
 
 /* Center text specifically for the stages overview box */
 div.info-box.stages#stages [typewriter="true"] { 
