@@ -1,6 +1,6 @@
 # Poker Over SSH Website
 
-This website is for the Poker over SSH terminal game, made by [@Duckyboi-xd](https://hackclub.slack.com/team/U08TJ79P0G4) and [@QinCai](https://hackclub.slack.com/team/U07BNRCEARM).
+This website is for the Poker over SSH terminal game, made by [@DuckyBoi-XD](https://github.com/DuckyBoi-XD) and [@QinCai-rui](https://github.com/QinCai-rui).
 
 ## Purpose
 
@@ -14,12 +14,14 @@ To have a nice place to show and explain our game, we created a website for our 
 
 ## Poker Over SSH Game
 
-Our game is a terminal based game built with python where you can play poker with other people that are online. If no one is online, you can play with AI (bots). This game run on SSH server hosted with nest so if hackclub nest goes down, were doing down with them. WARNING: This game can potentially adicting.
+This is a terminal-based game built with Python where you can play poker with other people who are online. If no one is online, you can play with AI (bots). This game runs on an SSH server hosted on [Hack Club Nest](https://hackclub.app), so if it goes down, we go down with them. :((
+
+WARNING: This game can be potentially addicting.
 
 ## Credit
 
-AI: Help me understand html, css and javascript when I barely know much. Creating typewriter function and fixing my mistakes.
+AI: helped @DuckyBoi-XD understand HTML, CSS, and JavaScript when he barely knew much. Also for creating typewriter functions and fixing mistakes.
 
 ## NOTE
 
-Repo + Website code may change do to fixing spelling, grammar and stupid mistakes.
+Repo + Website code may change do to fixing spelling, grammar, and stupid mistakes.
