@@ -4,17 +4,20 @@ let activeTimeouts = [];
 function typeWriter(element, initialSpeed = 20) {
     const originalText = element.textContent || element.innerText;
     
-    // Pre-process the text to add color spans for all suits
-    const coloredText = originalText.replace(/♦/g, '<span style="color: #ff4444;">♦</span>')
+    // Get the original HTML content to preserve links and other elements
+    const originalHTML = element.innerHTML;
+    
+    // Pre-process the HTML to add color spans for all suits while preserving other HTML
+    let coloredHTML = originalHTML.replace(/♦/g, '<span style="color: #ff4444;">♦</span>')
                                   .replace(/♥/g, '<span style="color: #ff4444;">♥</span>')
                                   .replace(/♠/g, '<span style="color: #000000; -webkit-text-stroke: 0.3px white; text-stroke: 0.3px white;">♠</span>')
                                   .replace(/♣/g, '<span style="color: #000000; -webkit-text-stroke: 0.3px white; text-stroke: 0.3px white;">♣</span>');
     
     // Parse the HTML to get segments of text and HTML tags
     const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = coloredText;
+    tempDiv.innerHTML = coloredHTML;
     
-    // Extract all text nodes and tags in order
+    // Extract all text nodes and HTML elements in order
     const segments = [];
     function walkNodes(node) {
         if (node.nodeType === Node.TEXT_NODE) {
@@ -28,30 +31,41 @@ function typeWriter(element, initialSpeed = 20) {
                 });
             }
         } else if (node.nodeType === Node.ELEMENT_NODE) {
-            // Add opening tag
+            // Handle different types of elements
             const tagName = node.tagName.toLowerCase();
-            const style = node.getAttribute('style');
-            const openTag = `<${tagName}${style ? ` style="${style}"` : ''}>`;
             
-            // Process children to get their content
-            let childContent = '';
-            for (let child of node.childNodes) {
-                if (child.nodeType === Node.TEXT_NODE) {
-                    childContent += child.textContent;
+            // Get all attributes of the element
+            let attributes = '';
+            if (node.attributes) {
+                for (let attr of node.attributes) {
+                    attributes += ` ${attr.name}="${attr.value}"`;
                 }
             }
             
-            // Add the complete styled element as one segment
+            const openTag = `<${tagName}${attributes}>`;
+            const closeTag = `</${tagName}>`;
+            
+            // Get the inner content
+            let innerContent = '';
+            for (let child of node.childNodes) {
+                if (child.nodeType === Node.TEXT_NODE) {
+                    innerContent += child.textContent;
+                } else if (child.nodeType === Node.ELEMENT_NODE) {
+                    innerContent += child.outerHTML;
+                }
+            }
+            
+            // Add the complete element as one segment to preserve link functionality
             segments.push({
-                type: 'styled',
-                content: childContent,
-                html: openTag + childContent + `</${tagName}>`
+                type: 'element',
+                content: innerContent,
+                html: openTag + innerContent + closeTag
             });
         }
     }
     
-    // If no HTML styling needed, use simple text approach
-    if (coloredText === originalText) {
+    // If no HTML elements are present, use simple text approach
+    if (coloredHTML === originalText) {
         element.textContent = '';
         let i = 0;
         const startTime = Date.now();
@@ -99,8 +113,8 @@ function typeWriter(element, initialSpeed = 20) {
         if (i < segments.length) {
             const segment = segments[i];
             
-            if (segment.type === 'styled') {
-                // Add the complete styled element at once
+            if (segment.type === 'element') {
+                // Add the complete HTML element at once (preserves functionality)
                 currentHtml += segment.html;
             } else {
                 // Add regular text character

@@ -129,6 +129,9 @@ div.info-box::before {
 }
 /*Info Box*/
 
+/*Profile link text*/
+.profile {color:rgb(90, 221, 120); text-decoration: none;}
+/*Profile link text*/
 /*Guide formatting code*/
 h2.HTP_poker { margin-bottom: 0px; }
 h3.HTP_poker { margin-bottom: 5px; }
