@@ -151,6 +151,10 @@ div.info-box.stages#turn { height: 82px !important; } /* Turn - 3 wrapped lines:
 div.info-box.stages#river { height: 82px !important; } /* River - 3 wrapped lines: 24 + (3 × 26) = 102px */
 div.info-box.stages#showdown { height: 162px !important; } /* Showdown - 6 wrapped lines: 24 + (6 × 26) = 180px */
 
+/* About page sections */
+div.info-box.stages#inspiration { height: 505px !important; } /* Inspiration - 15 wrapped lines: 24 + (15 × 26) = 414px */
+div.info-box.stages#credit { height: 240px !important; } /* Credit - 9 wrapped lines: 24 + (9 × 26) = 258px */
+
 /* Center text specifically for the stages overview box */
 div.info-box.stages#stages [typewriter="true"] { 
     text-align: center !important; 
@@ -297,14 +301,14 @@ div.header img {
 /*Image logo*/
 
 /*Box Section*/
-div.header.logo-section {
+.logo-section {
     border-radius: 100px;
     display: flex;
     align-items: center;
     flex-shrink: 0;
 }
 
-div.header.nav-section {
+.nav-section {
     display: flex;
     align-items: center;
     flex-shrink: 0;
@@ -385,54 +389,6 @@ div.header a.base::before {
     border-radius: 5px;
 }
 /*Link Text*/
-/*Fixed Heading*/
-
-
-/* Github logo */
-.github-logo {
-    display: inline-block;
-    margin-left: 18px;
-    color: #fff;
-    transition: transform 0.15s, color 0.15s;
-    text-decoration: none;
-}
-.github-logo:hover {
-    color: #26ab45;
-    transform: scale(1.15) rotate(-8deg);
-}
-.github-logo:active {
-    color: #1a7a31;
-    transform: scale(0.95) rotate(4deg);
-}
-/* animated tentacle */
-.github-svg { display: inline-block; }
-/* Use SVG transform-box so transform-origin is interpreted in SVG coordinates */
-.octo-tentacle,
-.octo-tentacle-group {
-    transform-box: fill-box;
-    /* origin near the base of the tentacle (in % of the element's box) */
-    transform-origin: 75% 40%;
-}
-.octo-tentacle { transition: transform 220ms ease; }
-.octo-tentacle-group { display: inline-block; }
-
-@keyframes tentacle-wave {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(12deg); }
-    50% { transform: rotate(0deg); }
-    75% { transform: rotate(-10deg); }
-    100% { transform: rotate(0deg); }
-}
-
-.github-logo:hover .octo-tentacle-group { animation: tentacle-wave 800ms ease-in-out infinite; }
-
-/* make animation optional for users who prefer reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    .github-logo:hover .octo-tentacle-group { animation: none; }
-}
-
-/* JS-toggled class to trigger tentacle wave (fallback for touch or non-hover environments) */
-.octo-tentacle-group.tentacle-wave-active { animation: tentacle-wave 800ms ease-in-out infinite; }
 
 /* GitHub corner (top-right) */
 .site-github-corner {
