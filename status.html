@@ -49,20 +49,6 @@
             </div>
         </div>
 
-        <!-- History: uptime / probe timeline -->
-        <div id="history-wrap" style="margin-top: 28px;">
-            <h2>Probe History</h2>
-            <div id="history-summary" style="margin-bottom:8px; color: #bfcbd6;">Loading history…</div>
-            <div id="history-chart" style="width:100%; max-width:900px; height:72px; background: #0b0f12; border-radius:6px; padding:8px; box-sizing:border-box;">
-                <!-- SVG chart will be injected !!HERE!! -->
-            </div>
-            <div id="history-footer" style="margin-top:8px; color:#9aa9b6; font-size:13px;">
-                <span style="display:inline-block;margin-right:12px;"><span style="display:inline-block;width:12px;height:12px;background:#2ecc71;border-radius:2px;margin-right:6px;vertical-align:middle;"></span> OK</span>
-                <span style="display:inline-block;margin-right:12px;"><span style="display:inline-block;width:12px;height:12px;background:#e74c3c;border-radius:2px;margin-right:6px;vertical-align:middle;"></span> Fail</span>
-                <span style="display:inline-block;"><span style="display:inline-block;width:12px;height:12px;background:#95a5a6;border-radius:2px;margin-right:6px;vertical-align:middle;"></span> Unknown</span>
-            </div>
-        </div>
-
         <script>
             // Dedicated status fetching function for this page
             async function loadServerStatus() {
@@ -71,10 +57,14 @@
 
                 try {
                     console.log('Fetching server status...');
+                    const startTime = Date.now();
                     
                     // Create a timeout controller for 10 seconds
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    const timeoutId = setTimeout(() => {
+                        console.log('Request timed out after 10 seconds');
+                        controller.abort();
+                    }, 10000);
                     
                     const response = await fetch('https://status.prod.poker.qincai.xyz/health', {
                         signal: controller.signal,
@@ -85,6 +75,9 @@
                     
                     // Clear the timeout if request completes
                     clearTimeout(timeoutId);
+                    const endTime = Date.now();
+                    const responseTime = endTime - startTime;
+                    console.log(`Response received in ${responseTime}ms`);
                     
                     console.log('Response status:', response.status);
                     
@@ -196,11 +189,13 @@
                     // Check for different types of errors
                     const isTimeoutError = error.name === 'AbortError';
                     const isServerError = error.message.includes('Server Error 5');
+                    const is502Error = error.message.includes('502') || error.message.includes('Bad Gateway');
                     const isCORSError = error.message.includes('CORS') || error.message.includes('fetch') || 
                                        error.message.includes('Failed to fetch');
                     
                     if (isTimeoutError) {
                         // Handle timeout errors
+                        console.log('Timeout error detected - request took longer than 10 seconds');
                         statusDisplay.innerHTML = `
                             <div style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
                                 <strong>⏱️ Request Timeout</strong><br>
@@ -248,6 +243,63 @@
                             <div class="status-timestamp">
                                 Timeout occurred: ${new Date().toLocaleString()}<br>
                                 <small>The page will retry automatically in 30 seconds</small>
+                            </div>
+                        `;
+                    } else if (is502Error) {
+                        // Handle 502 Bad Gateway errors
+                        statusDisplay.innerHTML = `
+                            <div style="background: rgba(255, 140, 0, 0.1); border: 1px solid rgba(255, 140, 0, 0.3); padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
+                                <strong>🚪 Bad Gateway (502)</strong><br>
+                                <small>The status server proxy/gateway is experiencing issues</small>
+                            </div>
+                            
+                            <div class="status-header">
+                                <div class="status-indicator status-offline">
+                                    🔄 Gateway Error
+                                </div>
+                            </div>
+                            
+                            <div class="status-details">
+                                <div class="status-item" style="grid-column: 1 / -1;">
+                                    <div class="status-item-title">Error Type</div>
+                                    <div class="status-item-value error">
+                                        502 Bad Gateway - Proxy/Load Balancer Issue
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">Likely Cause</div>
+                                    <div class="status-item-value">
+                                        Backend server unreachable or overloaded
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">Game Server Status</div>
+                                    <div class="status-item-value">
+                                        Unknown (monitoring gateway down)
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">Direct SSH Test</div>
+                                    <div class="status-item-value">
+                                        ssh play.poker.qincai.xyz -p 23456
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item" style="grid-column: 1 / -1;">
+                                    <div class="status-item-title">Note</div>
+                                    <div class="status-item-value">
+                                        502 errors usually indicate the monitoring infrastructure is having issues, not necessarily the game server itself.<br>
+                                        Try the SSH connection above to test the game server directly.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="status-timestamp">
+                                Gateway error detected: ${new Date().toLocaleString()}<br>
+                                <small>Status monitoring will retry automatically</small>
                             </div>
                         `;
                     } else if (isServerError) {
@@ -306,8 +358,8 @@
                         statusDisplay.innerHTML = `
                             <div style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
                                 <strong>🔒 Direct API Access Blocked</strong><br>
-                                <small>The server status API requires CORS headers to be accessed directly from this website.<br>
-                                You can still check the live status using the manual methods below.</small>
+                                <small>Browser security policy prevents direct access to the status API from this website.<br>
+                                Use the manual methods below to check the current server status.</small>
                             </div>
                             
                             <div class="status-header">
@@ -350,16 +402,16 @@
                                 <div class="status-item" style="grid-column: 1 / -1;">
                                     <div class="status-item-title">How to Check Status</div>
                                     <div class="status-item-value">
-                                        1. Click the "View Live Status JSON" link above<br>
-                                        2. Look for "status": "ok" and "ssh_ok": true<br>
-                                        3. Or try connecting directly with the SSH command
+                                        1. Click the "View Live Status JSON" link above to see real-time data<br>
+                                        2. Look for "status": "ok" and "ssh_ok": true in the JSON response<br>
+                                        3. Or test the game server directly with the SSH command above
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="status-timestamp">
-                                Status check attempted: ${new Date().toLocaleString()}<br>
-                                <small>Note: Server admin needs to add CORS headers to enable direct status display</small>
+                                CORS blocked: ${new Date().toLocaleString()}<br>
+                                <small>The API endpoint is working, but browser security prevents direct access from this page</small>
                             </div>
                         `;
                     } else {
