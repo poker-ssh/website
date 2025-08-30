@@ -1,6 +1,43 @@
 let isInitialized = false;
 let activeTimeouts = [];
 
+// HELPER: fetch with timeout (cleans up timer)
+async function fetchWithTimeout(resource, options = {}, timeout = 10000) {
+    const attempt = async (t) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), t);
+        const start = Date.now();
+        try {
+            console.debug(`[fetchWithTimeout] start ${resource} timeout=${t}ms`);
+            const response = await fetch(resource, { ...options, signal: controller.signal });
+            console.debug(`[fetchWithTimeout] finished ${resource} status=${response.status} took=${Date.now() - start}ms`);
+            return response;
+        } catch (e) {
+            const took = Date.now() - start;
+            console.warn(`[fetchWithTimeout] error ${resource} timeout=${t}ms took=${took}ms name=${e.name}`);
+            throw e;
+        } finally {
+            clearTimeout(id);
+        }
+    };
+
+    try {
+        return await attempt(timeout);
+    } catch (e) {
+        // If it was aborted due to timeout, retry once with a longer timeout to avoid spurious failures
+        if (e && e.name === 'AbortError' && timeout < 30000) {
+            console.warn(`[fetchWithTimeout] AbortError detected for ${resource}, retrying with ${Math.min(30000, timeout * 2)}ms`);
+            try {
+                return await attempt(Math.min(30000, timeout * 2));
+            } catch (e2) {
+                // surface the second error
+                throw e2;
+            }
+        }
+        throw e;
+    }
+}
+
 function typeWriter(element, initialSpeed = 20) {
     const originalText = element.textContent || element.innerText;
     
@@ -360,19 +397,11 @@ async function checkServerStatus() {
         // Show loading state
         statusElement.innerHTML = '<div class="info-box"><span class="status-loading">Checking server status...</span></div>';
         
-        // Fetch server health with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
-        const response = await fetch('https://status.prod.poker.qincai.xyz/health', {
+        // Fetch server health with a robust timeout helper
+        const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
             method: 'GET',
-            signal: controller.signal,
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-        
-        clearTimeout(timeoutId);
+            headers: { 'Accept': 'application/json' }
+        }, 10000);
         
         if (response.ok) {
             const data = await response.json();
@@ -466,21 +495,13 @@ async function checkDetailedServerStatus() {
             </div>
         `;
         
-        // Fetch server health with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-        
+        // Fetch server health with a robust timeout helper and measure response time
         const startTime = Date.now();
-        const response = await fetch('https://status.prod.poker.qincai.xyz/health', {
+        const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
             method: 'GET',
-            signal: controller.signal,
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+            headers: { 'Accept': 'application/json' }
+        }, 10000);
         const responseTime = Date.now() - startTime;
-        
-        clearTimeout(timeoutId);
         
         if (response.ok) {
             const data = await response.json();
@@ -616,12 +637,10 @@ async function fetchAndDisplayServerStatus() {
         `;
 
         console.log('About to fetch from API...');
-        const response = await fetch('https://status.prod.poker.qincai.xyz/health', {
+        const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
             mode: 'cors',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+            headers: { 'Accept': 'application/json' }
+        }, 10000);
         
         console.log('Fetch response received:', response);
         
