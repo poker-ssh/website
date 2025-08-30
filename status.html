@@ -49,6 +49,20 @@
             </div>
         </div>
 
+        <!-- History: uptime / probe timeline -->
+        <div id="history-wrap" style="margin-top: 28px;">
+            <h2>Probe History</h2>
+            <div id="history-summary" style="margin-bottom:8px; color: #bfcbd6;">Loading history…</div>
+            <div id="history-chart" style="width:100%; max-width:900px; height:72px; background: #0b0f12; border-radius:6px; padding:8px; box-sizing:border-box;">
+                <!-- SVG chart will be injected !!HERE!! -->
+            </div>
+            <div id="history-footer" style="margin-top:8px; color:#9aa9b6; font-size:13px;">
+                <span style="display:inline-block;margin-right:12px;"><span style="display:inline-block;width:12px;height:12px;background:#2ecc71;border-radius:2px;margin-right:6px;vertical-align:middle;"></span> OK</span>
+                <span style="display:inline-block;margin-right:12px;"><span style="display:inline-block;width:12px;height:12px;background:#e74c3c;border-radius:2px;margin-right:6px;vertical-align:middle;"></span> Fail</span>
+                <span style="display:inline-block;"><span style="display:inline-block;width:12px;height:12px;background:#95a5a6;border-radius:2px;margin-right:6px;vertical-align:middle;"></span> Unknown</span>
+            </div>
+        </div>
+
         <script>
             // Dedicated status fetching function for this page
             async function loadServerStatus() {

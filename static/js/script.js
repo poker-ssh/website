@@ -820,7 +820,93 @@ function initStatusPage() {
         
         // Auto-refresh every 30 seconds
         setInterval(fetchAndDisplayServerStatus, 30000);
+        // Also fetch history for the chart (refresh less often to avoid overload server)
+        fetchAndRenderHistory();
+        setInterval(fetchAndRenderHistory, 60000);
     } else {
         console.log('Status page element not found');
+    }
+}
+
+// Fetch history from status server and render a compact SVG uptime chart
+async function fetchAndRenderHistory() {
+    const summary = document.getElementById('history-summary');
+    const chartWrap = document.getElementById('history-chart');
+    if (!summary || !chartWrap) return;
+
+    summary.textContent = 'Loading history…';
+    chartWrap.innerHTML = '';
+
+    try {
+        const resp = await fetch('https://status.prod.poker.qincai.xyz/history', { cache: 'no-store' });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const body = await resp.json();
+        const entries = Array.isArray(body.history) ? body.history : [];
+
+        if (entries.length === 0) {
+            summary.textContent = 'No history available';
+            return;
+        }
+
+        // Build simple uptime-like chart: each entry becomes a vertical bar
+        const width = chartWrap.clientWidth - 16; // padding accounted for
+        const height = 56; // inner chart height
+        const padding = 4;
+        const barCount = entries.length;
+        const barWidth = Math.max(2, Math.floor((width - (barCount - 1) * 2) / barCount));
+
+        // Compute uptime percentage
+        const okCount = entries.filter(e => e.status === 'ok').length;
+        const uptimePct = Math.round((okCount / entries.length) * 1000) / 10; // one decimal
+
+        // Create SVG
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', String(height + padding * 2));
+        svg.setAttribute('viewBox', `0 0 ${width} ${height + padding * 2}`);
+
+        // background rect
+        const bg = document.createElementNS(svgNS, 'rect');
+        bg.setAttribute('x', '0'); bg.setAttribute('y', '0'); bg.setAttribute('width', String(width)); bg.setAttribute('height', String(height + padding * 2));
+        bg.setAttribute('rx', '6'); bg.setAttribute('fill', 'transparent');
+        svg.appendChild(bg);
+
+        // Bars
+        let x = 0;
+        for (let i = 0; i < entries.length; i++) {
+            const e = entries[i];
+            const isOk = e.status === 'ok';
+            const barHeight = Math.floor((height) * (isOk ? 0.95 : 0.65));
+            const y = padding + (height - barHeight);
+
+            const rect = document.createElementNS(svgNS, 'rect');
+            rect.setAttribute('x', String(x));
+            rect.setAttribute('y', String(y));
+            rect.setAttribute('width', String(barWidth));
+            rect.setAttribute('height', String(barHeight));
+            rect.setAttribute('rx', '2');
+            rect.setAttribute('fill', isOk ? '#2ecc71' : '#e74c3c');
+            rect.setAttribute('data-ts', String(e.ts || ''));
+            rect.setAttribute('data-status', e.status || '');
+            svg.appendChild(rect);
+
+            // optional small tooltip on hover using title
+            const title = document.createElementNS(svgNS, 'title');
+            const ts = e.ts ? new Date(e.ts * 1000).toLocaleString() : 'unknown';
+            title.textContent = `${e.status.toUpperCase()} — ${ts}`;
+            rect.appendChild(title);
+
+            x += barWidth + 2;
+        }
+
+        chartWrap.appendChild(svg);
+
+        summary.textContent = `Showing ${entries.length} probes — Uptime ${uptimePct}%`;
+
+    } catch (err) {
+        console.error('History fetch failed', err);
+        summary.textContent = 'Failed to load history — ensure https://status.prod.poker.qincai.xyz/history is reachable';
+        chartWrap.innerHTML = '<div style="color:#ffb8b8;padding:10px;">History unavailable</div>';
     }
 }
