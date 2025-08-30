@@ -153,55 +153,116 @@
                 } catch (error) {
                     console.error('Failed to fetch status:', error);
                     
-                    // Check if this is a CORS error (common when opening file:// directly)
+                    // Check if this is a CORS error
                     const isCORSError = error.message.includes('CORS') || error.message.includes('fetch') || 
-                                       error.message.includes('Failed to fetch') || window.location.protocol === 'file:';
+                                       error.message.includes('Failed to fetch');
                     
-                    // Show error state with helpful information
-                    statusDisplay.innerHTML = `
-                        <div style="background: rgba(255, 100, 100, 0.1); border: 1px solid rgba(255, 100, 100, 0.3); padding: 10px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
-                            <strong>${isCORSError ? '🔒 CORS/Security Issue' : '⚠️ API Connection Issue'}</strong><br>
-                            <small>${isCORSError ? 
-                                'For live status, serve this page from a web server (e.g., python3 -m http.server 8080)' : 
-                                'Unable to fetch live status data'
-                            }</small>
-                        </div>
-                        
-                        <div class="status-header">
-                            <div class="status-indicator status-offline">
-                                🔴 Status Check Failed
+                    if (isCORSError) {
+                        // For CORS errors, try to get status via a different method
+                        // Show a message explaining the situation and provide alternatives
+                        statusDisplay.innerHTML = `
+                            <div style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
+                                <strong>🔒 Direct API Access Blocked</strong><br>
+                                <small>The server status API requires CORS headers to be accessed directly from this website.<br>
+                                You can still check the live status using the manual methods below.</small>
                             </div>
-                        </div>
-                        
-                        <div class="status-details">
-                            <div class="status-item" style="grid-column: 1 / -1;">
-                                <div class="status-item-title">Error</div>
-                                <div class="status-item-value error">
-                                    ${error.message}
+                            
+                            <div class="status-header">
+                                <div class="status-indicator status-offline">
+                                    🔍 Manual Check Required
                                 </div>
                             </div>
                             
-                            <div class="status-item">
-                                <div class="status-item-title">Manual Check</div>
-                                <div class="status-item-value">
-                                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
-                                        View Health Endpoint →
-                                    </a>
+                            <div class="status-details">
+                                <div class="status-item">
+                                    <div class="status-item-title">Live API Status</div>
+                                    <div class="status-item-value">
+                                        <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                            View Live Status JSON →
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">Server Host</div>
+                                    <div class="status-item-value">
+                                        play.poker.qincai.xyz
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">Server Port</div>
+                                    <div class="status-item-value">
+                                        23456
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">SSH Test Command</div>
+                                    <div class="status-item-value">
+                                        ssh play.poker.qincai.xyz -p 23456
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item" style="grid-column: 1 / -1;">
+                                    <div class="status-item-title">How to Check Status</div>
+                                    <div class="status-item-value">
+                                        1. Click the "View Live Status JSON" link above<br>
+                                        2. Look for "status": "ok" and "ssh_ok": true<br>
+                                        3. Or try connecting directly with the SSH command
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div class="status-item">
-                                <div class="status-item-title">SSH Test Command</div>
-                                <div class="status-item-value">
-                                    ssh play.poker.qincai.xyz -p 23456
+                            <div class="status-timestamp">
+                                Status check attempted: ${new Date().toLocaleString()}<br>
+                                <small>Note: Server admin needs to add CORS headers to enable direct status display</small>
+                            </div>
+                        `;
+                    } else {
+                        // For other errors, show the original error display
+                        statusDisplay.innerHTML = `
+                            <div style="background: rgba(255, 100, 100, 0.1); border: 1px solid rgba(255, 100, 100, 0.3); padding: 10px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
+                                <strong>⚠️ API Connection Issue</strong><br>
+                                <small>Unable to fetch live status data</small>
+                            </div>
+                            
+                            <div class="status-header">
+                                <div class="status-indicator status-offline">
+                                    🔴 Status Check Failed
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="status-timestamp">
-                            Last attempt: ${new Date().toLocaleString()}
-                        </div>
-                    `;
+                            
+                            <div class="status-details">
+                                <div class="status-item" style="grid-column: 1 / -1;">
+                                    <div class="status-item-title">Error</div>
+                                    <div class="status-item-value error">
+                                        ${error.message}
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">Manual Check</div>
+                                    <div class="status-item-value">
+                                        <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                            View Health Endpoint →
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">SSH Test Command</div>
+                                    <div class="status-item-value">
+                                        ssh play.poker.qincai.xyz -p 23456
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="status-timestamp">
+                                Last attempt: ${new Date().toLocaleString()}
+                            </div>
+                        `;
+                    }
                 }
             }
 
