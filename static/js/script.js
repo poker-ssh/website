@@ -737,14 +737,63 @@ async function fetchAndDisplayServerStatus() {
         
     } catch (error) {
         console.error('Failed to fetch server status:', error);
-        
-        // If CORS is blocking, try alternative method
-        if (error.message.includes('CORS') || error.message.includes('fetch')) {
-            console.log('CORS error detected, trying alternative method...');
+
+        // If the thrown error encodes an HTTP status, prefer handling 5xx explicitly
+        try {
+            const match = (error && error.message) ? error.message.match(/HTTP\s*:?\s*(\d{3})/) : null;
+            if (match && match[1]) {
+                const code = Number(match[1]);
+                if (code >= 500 && code < 600) {
+                    statusDisplay.innerHTML = `
+                        <div class="status-header">
+                            <div class="status-indicator status-offline">
+                                🔴 Status Server Unavailable
+                            </div>
+                        </div>
+                        
+                        <div class="status-details">
+                            <div class="status-item" style="grid-column: 1 / -1;">
+                                <div class="status-item-title">Error</div>
+                                <div class="status-item-value error">
+                                    Server returned HTTP ${code} — the status server is most likely down.
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-item-title">Manual Check</div>
+                                <div class="status-item-value">
+                                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                        Visit Health Endpoint →
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-item-title">SSH Connection Test</div>
+                                <div class="status-item-value">
+                                    ssh play.poker.qincai.xyz -p 23456
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-timestamp">
+                            Last attempt: ${new Date().toLocaleString()}
+                        </div>
+                    `;
+                    return;
+                }
+            }
+        } catch (e) {
+            // ignore parsing errors and continue to other handling
+        }
+
+        // If this appears to be a network/CORS error (TypeError or contains 'CORS'/'Failed to fetch'), use alternative fetch
+        const isCorsLike = (error && ((error.name === 'TypeError' && error.message.includes('Failed to fetch')) || error.message.includes('CORS')));
+        if (isCorsLike) {
+            console.log('CORS or network error detected, trying alternative method...');
             tryAlternativeStatusFetch(statusDisplay);
             return;
         }
-        
+
+        // Generic fallback display
         statusDisplay.innerHTML = `
             <div class="status-header">
                 <div class="status-indicator status-offline">
@@ -756,7 +805,7 @@ async function fetchAndDisplayServerStatus() {
                 <div class="status-item" style="grid-column: 1 / -1;">
                     <div class="status-item-title">Error</div>
                     <div class="status-item-value error">
-                        Failed to fetch status: ${error.message}
+                        Failed to fetch status: ${error && error.message ? error.message : String(error)}
                     </div>
                 </div>
                 
