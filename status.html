@@ -12,7 +12,7 @@
 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Home | Poker over SSH</title>
+        <title>Status | Poker over SSH</title>
     </head>
 
     <body>
@@ -57,27 +57,11 @@
 
                 try {
                     console.log('Fetching server status...');
-                    const startTime = Date.now();
                     
-                    // Create a timeout controller for 10 seconds
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => {
-                        console.log('Request timed out after 10 seconds');
-                        controller.abort();
+                    // Use the shared fetchWithTimeout helper (defined in static/js/script.js)
+                    const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
+                        headers: { 'Accept': 'application/json' }
                     }, 10000);
-                    
-                    const response = await fetch('https://status.prod.poker.qincai.xyz/health', {
-                        signal: controller.signal,
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    
-                    // Clear the timeout if request completes
-                    clearTimeout(timeoutId);
-                    const endTime = Date.now();
-                    const responseTime = endTime - startTime;
-                    console.log(`Response received in ${responseTime}ms`);
                     
                     console.log('Response status:', response.status);
                     

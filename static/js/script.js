@@ -1,6 +1,43 @@
 let isInitialized = false;
 let activeTimeouts = [];
 
+// HELPER: fetch with timeout (cleans up timer)
+async function fetchWithTimeout(resource, options = {}, timeout = 10000) {
+    const attempt = async (t) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), t);
+        const start = Date.now();
+        try {
+            console.debug(`[fetchWithTimeout] start ${resource} timeout=${t}ms`);
+            const response = await fetch(resource, { ...options, signal: controller.signal });
+            console.debug(`[fetchWithTimeout] finished ${resource} status=${response.status} took=${Date.now() - start}ms`);
+            return response;
+        } catch (e) {
+            const took = Date.now() - start;
+            console.warn(`[fetchWithTimeout] error ${resource} timeout=${t}ms took=${took}ms name=${e.name}`);
+            throw e;
+        } finally {
+            clearTimeout(id);
+        }
+    };
+
+    try {
+        return await attempt(timeout);
+    } catch (e) {
+        // If it was aborted due to timeout, retry once with a longer timeout to avoid spurious failures
+        if (e && e.name === 'AbortError' && timeout < 30000) {
+            console.warn(`[fetchWithTimeout] AbortError detected for ${resource}, retrying with ${Math.min(30000, timeout * 2)}ms`);
+            try {
+                return await attempt(Math.min(30000, timeout * 2));
+            } catch (e2) {
+                // surface the second error
+                throw e2;
+            }
+        }
+        throw e;
+    }
+}
+
 function typeWriter(element, initialSpeed = 20) {
     const originalText = element.textContent || element.innerText;
     
@@ -360,21 +397,13 @@ async function checkServerStatus() {
         // Show loading state
         statusElement.innerHTML = '<div class="info-box"><span class="status-loading">Checking server status...</span></div>';
         
-        // Fetch server health with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
-        const response = await fetch('https://status.prod.poker.qincai.xyz/health', {
+        // Fetch server health with a robust timeout helper
+        const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
             method: 'GET',
-            signal: controller.signal,
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+            headers: { 'Accept': 'application/json' }
+        }, 10000);
         
-        clearTimeout(timeoutId);
-        
-        if (response.ok) {
+    if (response.ok) {
             const data = await response.json();
             const lastProbe = new Date(data.last_probe * 1000).toLocaleString();
             
@@ -414,6 +443,24 @@ async function checkServerStatus() {
                     </div>
                 `;
             }
+        } else if (response.status >= 500 && response.status < 600) {
+            // Server-side error: likely the status server or backend is down
+            statusElement.innerHTML = `
+                <div class="info-box">
+                    <div class="status-offline">
+                        <span class="status-indicator">🔴</span>
+                        <span class="status-text">Server Unavailable</span>
+                        <div class="status-info">
+                            <p><strong>Error:</strong> HTTP ${response.status} — Server error</p>
+                            <p>The status server is returning a ${response.status} error. The server is most likely down.</p>
+                            <p><strong>Manual check:</strong> <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255);">View health endpoint</a></p>
+                            <p><strong>Try connecting:</strong> <code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                            <p><strong>Last checked:</strong> ${new Date().toLocaleTimeString()}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
         } else {
             throw new Error(`HTTP ${response.status}`);
         }
@@ -466,23 +513,15 @@ async function checkDetailedServerStatus() {
             </div>
         `;
         
-        // Fetch server health with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-        
+        // Fetch server health with a robust timeout helper and measure response time
         const startTime = Date.now();
-        const response = await fetch('https://status.prod.poker.qincai.xyz/health', {
+        const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
             method: 'GET',
-            signal: controller.signal,
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+            headers: { 'Accept': 'application/json' }
+        }, 10000);
         const responseTime = Date.now() - startTime;
         
-        clearTimeout(timeoutId);
-        
-        if (response.ok) {
+    if (response.ok) {
             const data = await response.json();
             const lastProbe = new Date(data.last_probe * 1000);
             const timeSinceProbe = Math.floor((Date.now() - data.last_probe * 1000) / 1000);
@@ -546,6 +585,31 @@ async function checkDetailedServerStatus() {
                     </div>
                 </div>
             `;
+        } else if (response.status >= 500 && response.status < 600) {
+            // Server-side error: likely the status server or backend is down
+            detailedElement.innerHTML = `
+                <div class="info-box stages" style="height: auto; min-height: 200px; text-align: left;">
+                    <h3 style="color: rgb(255, 100, 100); margin-top: 0;">⚠️ Status Server Unavailable</h3>
+                    <div style="margin: 15px 0;">
+                        <div style="padding: 8px 0; border-bottom: 1px solid rgba(255, 100, 100, 0.2); font-size: 16px;">
+                            <strong style="color: rgb(255, 100, 100);">Error:</strong> <span style="color: rgb(255, 150, 150);">HTTP ${response.status} — Server error</span>
+                        </div>
+                        <div style="padding: 8px 0; font-size: 16px;">
+                            <strong style="color: rgb(255, 100, 100);">Message:</strong> The status endpoint is returning a server error. The server is most likely down.
+                        </div>
+                    </div>
+                    <h4 style="color: rgb(255, 100, 100); margin-top: 20px;">🔎 Manual Checks</h4>
+                    <div style="margin: 15px 0;">
+                        <p><strong>Check the health endpoint:</strong></p>
+                        <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="display: inline-block; background: rgba(255, 100, 100, 0.1); padding: 12px; border-radius: 6px; color: rgb(100, 200, 255); text-decoration: none; font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255, 100, 100, 0.3);">https://status.prod.poker.qincai.xyz/health →</a>
+                        <p style="margin-top:10px;"><strong>Try direct SSH:</strong> <code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                    </div>
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 100, 100, 0.2); font-size: 12px; color: rgb(150, 150, 150); text-align: center; font-style: italic;">
+                        Last attempt: ${new Date().toLocaleString()}
+                    </div>
+                </div>
+            `;
+            return;
         } else {
             throw new Error(`HTTP ${response.status}`);
         }
@@ -616,16 +680,52 @@ async function fetchAndDisplayServerStatus() {
         `;
 
         console.log('About to fetch from API...');
-        const response = await fetch('https://status.prod.poker.qincai.xyz/health', {
+        const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
             mode: 'cors',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+            headers: { 'Accept': 'application/json' }
+        }, 10000);
         
         console.log('Fetch response received:', response);
         
         if (!response.ok) {
+            if (response.status >= 500 && response.status < 600) {
+                // Server-side error: likely the status server or backend is down
+                statusDisplay.innerHTML = `
+                    <div class="status-header">
+                        <div class="status-indicator status-offline">
+                            🔴 Status Server Unavailable
+                        </div>
+                    </div>
+                    
+                    <div class="status-details">
+                        <div class="status-item" style="grid-column: 1 / -1;">
+                            <div class="status-item-title">Error</div>
+                            <div class="status-item-value error">
+                                Server returned HTTP ${response.status} — the status server is most likely down.
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-item-title">Manual Check</div>
+                            <div class="status-item-value">
+                                <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                    Visit Health Endpoint →
+                                </a>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-item-title">SSH Connection Test</div>
+                            <div class="status-item-value">
+                                ssh play.poker.qincai.xyz -p 23456
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-timestamp">
+                        Last attempt: ${new Date().toLocaleString()}
+                    </div>
+                `;
+                return;
+            }
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
@@ -637,14 +737,109 @@ async function fetchAndDisplayServerStatus() {
         
     } catch (error) {
         console.error('Failed to fetch server status:', error);
-        
-        // If CORS is blocking, try alternative method
-        if (error.message.includes('CORS') || error.message.includes('fetch')) {
-            console.log('CORS error detected, trying alternative method...');
-            tryAlternativeStatusFetch(statusDisplay);
-            return;
+
+        // If the thrown error encodes an HTTP status, prefer handling 5xx explicitly
+        try {
+            const match = (error && error.message) ? error.message.match(/HTTP\s*:?\s*(\d{3})/) : null;
+            if (match && match[1]) {
+                const code = Number(match[1]);
+                if (code >= 500 && code < 600) {
+                    statusDisplay.innerHTML = `
+                        <div class="status-header">
+                            <div class="status-indicator status-offline">
+                                🔴 Status Server Unavailable
+                            </div>
+                        </div>
+                        
+                        <div class="status-details">
+                            <div class="status-item" style="grid-column: 1 / -1;">
+                                <div class="status-item-title">Error</div>
+                                <div class="status-item-value error">
+                                    Server returned HTTP ${code} — the status server is most likely down.
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-item-title">Manual Check</div>
+                                <div class="status-item-value">
+                                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                        Visit Health Endpoint →
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-item-title">SSH Connection Test</div>
+                                <div class="status-item-value">
+                                    ssh play.poker.qincai.xyz -p 23456
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-timestamp">
+                            Last attempt: ${new Date().toLocaleString()}
+                        </div>
+                    `;
+                    return;
+                }
+            }
+        } catch (e) {
+            // ignore parsing errors and continue to other handling
         }
-        
+
+        // If this appears to be a network/CORS error, probe the /health endpoint using no-cors to decide
+        const isCorsLike = (error && ((error.name === 'TypeError' && error.message.includes('Failed to fetch')) || error.message.includes('CORS')));
+        if (isCorsLike) {
+            console.log('CORS or network error detected, probing /health with no-cors...');
+            try {
+                const reachable = await probeHealthEndpoint(4000);
+                        if (reachable) {
+                            console.log('Probe succeeded -> host reachable but original fetch failed. Showing diagnostic message.');
+                            tryAlternativeStatusFetch(statusDisplay, true);
+                    return;
+                } else {
+                    console.log('Probe failed -> likely server down. Showing server-down message.');
+                    statusDisplay.innerHTML = `
+                        <div class="status-header">
+                            <div class="status-indicator status-offline">
+                                🔴 Server Unreachable
+                            </div>
+                        </div>
+                        
+                        <div class="status-details">
+                            <div class="status-item" style="grid-column: 1 / -1;">
+                                <div class="status-item-title">Error</div>
+                                <div class="status-item-value error">
+                                    Could not reach the status host. The server is most likely down.
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-item-title">Manual Check</div>
+                                <div class="status-item-value">
+                                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                        Visit Health Endpoint →
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-item-title">SSH Connection Test</div>
+                                <div class="status-item-value">
+                                    ssh play.poker.qincai.xyz -p 23456
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-timestamp">
+                            Last attempt: ${new Date().toLocaleString()}
+                        </div>
+                    `;
+                    return;
+                }
+            } catch (probeErr) {
+                console.warn('Probe error:', probeErr);
+                // fall through to generic fallback
+            }
+        }
+
+        // Generic fallback display
         statusDisplay.innerHTML = `
             <div class="status-header">
                 <div class="status-indicator status-offline">
@@ -656,7 +851,7 @@ async function fetchAndDisplayServerStatus() {
                 <div class="status-item" style="grid-column: 1 / -1;">
                     <div class="status-item-title">Error</div>
                     <div class="status-item-value error">
-                        Failed to fetch status: ${error.message}
+                        Failed to fetch status: ${error && error.message ? error.message : String(error)}
                     </div>
                 </div>
                 
@@ -685,24 +880,75 @@ async function fetchAndDisplayServerStatus() {
 }
 
 // Alternative method to fetch status when CORS is blocking
-function tryAlternativeStatusFetch(statusDisplay) {
-    console.log('Trying alternative status fetch method...');
-    
-    // Create a mock status for demonstration (replace with actual data when CORS is resolved)
-    const mockData = {
-        status: 'ok',
-        last_probe: Math.floor(Date.now() / 1000) - 300, // 5 minutes ago
-        probe: {
-            host: 'play.poker.qincai.xyz',
-            port: 23456,
-            tcp_connect: true,
-            ssh_ok: true,
-            error: null
-        }
-    };
-    
-    // Show a note about CORS and then display mock data
-    displayStatusData(mockData, statusDisplay, true);
+function tryAlternativeStatusFetch(statusDisplay, probeReachable = null) {
+    console.log('CORS/network fallback invoked — showing diagnostic message.');
+
+    if (!statusDisplay) return;
+
+    if (probeReachable === true) {
+        // Host is reachable but original fetch failed: likely server-side HTTP error (e.g., 502)
+        statusDisplay.innerHTML = `
+            <div class="status-blocked">
+                <h3>⚠️ Direct Fetch Failed (Host Reachable)</h3>
+                <p>The status host is reachable but the API request failed. This usually means the status server returned an HTTP error (for example: 502 Bad Gateway).</p>
+                <div style="margin-top:12px; padding:10px; border-radius:6px; background:rgba(240,240,240,0.04);">
+                    <strong>Live API Status</strong><br>
+                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">Open health endpoint to see the HTTP error →</a>
+                </div>
+                <div style="margin-top:12px;">
+                    <p><strong>SSH Test Command</strong><br><code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                </div>
+                <div style="margin-top:12px; color: #bbb; font-size: 13px;">
+                    <p style="margin-top:6px;">Status check attempted: ${new Date().toLocaleString()}</p>
+                    <p style="font-style:italic;">If you see an HTTP 5xx when opening the endpoint, the server is most likely down.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // probeReachable === false or unknown -> treat as CORS/network blocking
+    statusDisplay.innerHTML = `
+        <div class="status-blocked">
+            <h3>🔒 Direct API Access Blocked</h3>
+            <p>The server status API requires CORS headers to be accessed directly from this website, or the request was blocked by network/CORS restrictions.</p>
+            <p>You can still check the live status using the manual methods below.</p>
+
+            <div style="margin-top:12px; padding:10px; border-radius:6px; background:rgba(240,240,240,0.04);">
+                <strong>Live API Status</strong><br>
+                <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">View Live Status JSON →</a>
+            </div>
+
+            <div style="margin-top:12px;">
+                <p><strong>Server Host</strong><br><code>play.poker.qincai.xyz</code></p>
+                <p><strong>Server Port</strong><br><code>23456</code></p>
+                <p><strong>SSH Test Command</strong><br><code>ssh play.poker.qincai.xyz -p 23456</code></p>
+            </div>
+
+            <div style="margin-top:12px; color: #bbb; font-size: 13px;">
+                <p><strong>How to Check Status</strong></p>
+                <ol>
+                    <li>Click the "View Live Status JSON" link above</li>
+                    <li>Look for <code>"status": "ok"</code> and <code>"ssh_ok": true</code></li>
+                    <li>Or try connecting directly with the SSH command</li>
+                </ol>
+                <p style="margin-top:6px;">Status check attempted: ${new Date().toLocaleString()}</p>
+                <p style="font-style:italic;">Note: Server admin needs to add CORS headers to enable direct status display</p>
+            </div>
+        </div>
+    `;
+}
+
+// Probe the /health endpoint using no-cors to detect host reachability.
+// Returns true if the request completes (opaque responses count as success), false if it fails.
+async function probeHealthEndpoint(timeout = 4000) {
+    try {
+        // use no-cors so the browser will attempt the request but return an opaque response if CORS is missing
+        await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', { mode: 'no-cors', cache: 'no-store' }, timeout);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 // Separate function to display status data
