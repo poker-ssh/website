@@ -785,12 +785,58 @@ async function fetchAndDisplayServerStatus() {
             // ignore parsing errors and continue to other handling
         }
 
-        // If this appears to be a network/CORS error (TypeError or contains 'CORS'/'Failed to fetch'), use alternative fetch
+        // If this appears to be a network/CORS error, probe the /health endpoint using no-cors to decide
         const isCorsLike = (error && ((error.name === 'TypeError' && error.message.includes('Failed to fetch')) || error.message.includes('CORS')));
         if (isCorsLike) {
-            console.log('CORS or network error detected, trying alternative method...');
-            tryAlternativeStatusFetch(statusDisplay);
-            return;
+            console.log('CORS or network error detected, probing /health with no-cors...');
+            try {
+                const reachable = await probeHealthEndpoint(4000);
+                if (reachable) {
+                    console.log('Probe succeeded -> likely CORS. Using alternative fetch.');
+                    tryAlternativeStatusFetch(statusDisplay);
+                    return;
+                } else {
+                    console.log('Probe failed -> likely server down. Showing server-down message.');
+                    statusDisplay.innerHTML = `
+                        <div class="status-header">
+                            <div class="status-indicator status-offline">
+                                🔴 Server Unreachable
+                            </div>
+                        </div>
+                        
+                        <div class="status-details">
+                            <div class="status-item" style="grid-column: 1 / -1;">
+                                <div class="status-item-title">Error</div>
+                                <div class="status-item-value error">
+                                    Could not reach the status host. The server is most likely down.
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-item-title">Manual Check</div>
+                                <div class="status-item-value">
+                                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                        Visit Health Endpoint →
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-item-title">SSH Connection Test</div>
+                                <div class="status-item-value">
+                                    ssh play.poker.qincai.xyz -p 23456
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-timestamp">
+                            Last attempt: ${new Date().toLocaleString()}
+                        </div>
+                    `;
+                    return;
+                }
+            } catch (probeErr) {
+                console.warn('Probe error:', probeErr);
+                // fall through to generic fallback
+            }
         }
 
         // Generic fallback display
@@ -852,6 +898,18 @@ function tryAlternativeStatusFetch(statusDisplay) {
     
     // Show a note about CORS and then display mock data
     displayStatusData(mockData, statusDisplay, true);
+}
+
+// Probe the /health endpoint using no-cors to detect host reachability.
+// Returns true if the request completes (opaque responses count as success), false if it fails.
+async function probeHealthEndpoint(timeout = 4000) {
+    try {
+        // use no-cors so the browser will attempt the request but return an opaque response if CORS is missing
+        await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', { mode: 'no-cors', cache: 'no-store' }, timeout);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 // Separate function to display status data
