@@ -910,3 +910,24 @@ async function fetchAndRenderHistory() {
         chartWrap.innerHTML = '<div style="color:#ffb8b8;padding:10px;">History unavailable</div>';
     }
 }
+
+// Initialise server status polling
+function initServerStatus() {
+    try {
+        // perform an immediate check and then poll every 30s
+        checkServerStatus();
+        setInterval(checkServerStatus, 30000);
+    } catch (e) {
+        console.warn('initServerStatus failed:', e);
+    }
+}
+
+// Initialise detailed status polling (shim)
+function initDetailedStatus() {
+    try {
+        checkDetailedServerStatus();
+        setInterval(checkDetailedServerStatus, 30000);
+    } catch (e) {
+        console.warn('initDetailedStatus failed:', e);
+    }
+}
