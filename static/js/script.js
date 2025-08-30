@@ -403,7 +403,7 @@ async function checkServerStatus() {
             headers: { 'Accept': 'application/json' }
         }, 10000);
         
-        if (response.ok) {
+    if (response.ok) {
             const data = await response.json();
             const lastProbe = new Date(data.last_probe * 1000).toLocaleString();
             
@@ -443,6 +443,24 @@ async function checkServerStatus() {
                     </div>
                 `;
             }
+        } else if (response.status >= 500 && response.status < 600) {
+            // Server-side error: likely the status server or backend is down
+            statusElement.innerHTML = `
+                <div class="info-box">
+                    <div class="status-offline">
+                        <span class="status-indicator">🔴</span>
+                        <span class="status-text">Server Unavailable</span>
+                        <div class="status-info">
+                            <p><strong>Error:</strong> HTTP ${response.status} — Server error</p>
+                            <p>The status server is returning a ${response.status} error. The server is most likely down.</p>
+                            <p><strong>Manual check:</strong> <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255);">View health endpoint</a></p>
+                            <p><strong>Try connecting:</strong> <code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                            <p><strong>Last checked:</strong> ${new Date().toLocaleTimeString()}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
         } else {
             throw new Error(`HTTP ${response.status}`);
         }
@@ -503,7 +521,7 @@ async function checkDetailedServerStatus() {
         }, 10000);
         const responseTime = Date.now() - startTime;
         
-        if (response.ok) {
+    if (response.ok) {
             const data = await response.json();
             const lastProbe = new Date(data.last_probe * 1000);
             const timeSinceProbe = Math.floor((Date.now() - data.last_probe * 1000) / 1000);
@@ -567,6 +585,31 @@ async function checkDetailedServerStatus() {
                     </div>
                 </div>
             `;
+        } else if (response.status >= 500 && response.status < 600) {
+            // Server-side error: likely the status server or backend is down
+            detailedElement.innerHTML = `
+                <div class="info-box stages" style="height: auto; min-height: 200px; text-align: left;">
+                    <h3 style="color: rgb(255, 100, 100); margin-top: 0;">⚠️ Status Server Unavailable</h3>
+                    <div style="margin: 15px 0;">
+                        <div style="padding: 8px 0; border-bottom: 1px solid rgba(255, 100, 100, 0.2); font-size: 16px;">
+                            <strong style="color: rgb(255, 100, 100);">Error:</strong> <span style="color: rgb(255, 150, 150);">HTTP ${response.status} — Server error</span>
+                        </div>
+                        <div style="padding: 8px 0; font-size: 16px;">
+                            <strong style="color: rgb(255, 100, 100);">Message:</strong> The status endpoint is returning a server error. The server is most likely down.
+                        </div>
+                    </div>
+                    <h4 style="color: rgb(255, 100, 100); margin-top: 20px;">🔎 Manual Checks</h4>
+                    <div style="margin: 15px 0;">
+                        <p><strong>Check the health endpoint:</strong></p>
+                        <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="display: inline-block; background: rgba(255, 100, 100, 0.1); padding: 12px; border-radius: 6px; color: rgb(100, 200, 255); text-decoration: none; font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255, 100, 100, 0.3);">https://status.prod.poker.qincai.xyz/health →</a>
+                        <p style="margin-top:10px;"><strong>Try direct SSH:</strong> <code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                    </div>
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 100, 100, 0.2); font-size: 12px; color: rgb(150, 150, 150); text-align: center; font-style: italic;">
+                        Last attempt: ${new Date().toLocaleString()}
+                    </div>
+                </div>
+            `;
+            return;
         } else {
             throw new Error(`HTTP ${response.status}`);
         }
@@ -645,6 +688,44 @@ async function fetchAndDisplayServerStatus() {
         console.log('Fetch response received:', response);
         
         if (!response.ok) {
+            if (response.status >= 500 && response.status < 600) {
+                // Server-side error: likely the status server or backend is down
+                statusDisplay.innerHTML = `
+                    <div class="status-header">
+                        <div class="status-indicator status-offline">
+                            🔴 Status Server Unavailable
+                        </div>
+                    </div>
+                    
+                    <div class="status-details">
+                        <div class="status-item" style="grid-column: 1 / -1;">
+                            <div class="status-item-title">Error</div>
+                            <div class="status-item-value error">
+                                Server returned HTTP ${response.status} — the status server is most likely down.
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-item-title">Manual Check</div>
+                            <div class="status-item-value">
+                                <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                    Visit Health Endpoint →
+                                </a>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-item-title">SSH Connection Test</div>
+                            <div class="status-item-value">
+                                ssh play.poker.qincai.xyz -p 23456
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-timestamp">
+                        Last attempt: ${new Date().toLocaleString()}
+                    </div>
+                `;
+                return;
+            }
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
