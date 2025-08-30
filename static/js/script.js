@@ -791,9 +791,9 @@ async function fetchAndDisplayServerStatus() {
             console.log('CORS or network error detected, probing /health with no-cors...');
             try {
                 const reachable = await probeHealthEndpoint(4000);
-                if (reachable) {
-                    console.log('Probe succeeded -> likely CORS. Using alternative fetch.');
-                    tryAlternativeStatusFetch(statusDisplay);
+                        if (reachable) {
+                            console.log('Probe succeeded -> host reachable but original fetch failed. Showing diagnostic message.');
+                            tryAlternativeStatusFetch(statusDisplay, true);
                     return;
                 } else {
                     console.log('Probe failed -> likely server down. Showing server-down message.');
@@ -880,24 +880,63 @@ async function fetchAndDisplayServerStatus() {
 }
 
 // Alternative method to fetch status when CORS is blocking
-function tryAlternativeStatusFetch(statusDisplay) {
-    console.log('Trying alternative status fetch method...');
-    
-    // Create a mock status for demonstration (replace with actual data when CORS is resolved)
-    const mockData = {
-        status: 'ok',
-        last_probe: Math.floor(Date.now() / 1000) - 300, // 5 minutes ago
-        probe: {
-            host: 'play.poker.qincai.xyz',
-            port: 23456,
-            tcp_connect: true,
-            ssh_ok: true,
-            error: null
-        }
-    };
-    
-    // Show a note about CORS and then display mock data
-    displayStatusData(mockData, statusDisplay, true);
+function tryAlternativeStatusFetch(statusDisplay, probeReachable = null) {
+    console.log('CORS/network fallback invoked — showing diagnostic message.');
+
+    if (!statusDisplay) return;
+
+    if (probeReachable === true) {
+        // Host is reachable but original fetch failed: likely server-side HTTP error (e.g., 502)
+        statusDisplay.innerHTML = `
+            <div class="status-blocked">
+                <h3>⚠️ Direct Fetch Failed (Host Reachable)</h3>
+                <p>The status host is reachable but the API request failed. This usually means the status server returned an HTTP error (for example: 502 Bad Gateway).</p>
+                <div style="margin-top:12px; padding:10px; border-radius:6px; background:rgba(240,240,240,0.04);">
+                    <strong>Live API Status</strong><br>
+                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">Open health endpoint to see the HTTP error →</a>
+                </div>
+                <div style="margin-top:12px;">
+                    <p><strong>SSH Test Command</strong><br><code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                </div>
+                <div style="margin-top:12px; color: #bbb; font-size: 13px;">
+                    <p style="margin-top:6px;">Status check attempted: ${new Date().toLocaleString()}</p>
+                    <p style="font-style:italic;">If you see an HTTP 5xx when opening the endpoint, the server is most likely down.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // probeReachable === false or unknown -> treat as CORS/network blocking
+    statusDisplay.innerHTML = `
+        <div class="status-blocked">
+            <h3>🔒 Direct API Access Blocked</h3>
+            <p>The server status API requires CORS headers to be accessed directly from this website, or the request was blocked by network/CORS restrictions.</p>
+            <p>You can still check the live status using the manual methods below.</p>
+
+            <div style="margin-top:12px; padding:10px; border-radius:6px; background:rgba(240,240,240,0.04);">
+                <strong>Live API Status</strong><br>
+                <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">View Live Status JSON →</a>
+            </div>
+
+            <div style="margin-top:12px;">
+                <p><strong>Server Host</strong><br><code>play.poker.qincai.xyz</code></p>
+                <p><strong>Server Port</strong><br><code>23456</code></p>
+                <p><strong>SSH Test Command</strong><br><code>ssh play.poker.qincai.xyz -p 23456</code></p>
+            </div>
+
+            <div style="margin-top:12px; color: #bbb; font-size: 13px;">
+                <p><strong>How to Check Status</strong></p>
+                <ol>
+                    <li>Click the "View Live Status JSON" link above</li>
+                    <li>Look for <code>"status": "ok"</code> and <code>"ssh_ok": true</code></li>
+                    <li>Or try connecting directly with the SSH command</li>
+                </ol>
+                <p style="margin-top:6px;">Status check attempted: ${new Date().toLocaleString()}</p>
+                <p style="font-style:italic;">Note: Server admin needs to add CORS headers to enable direct status display</p>
+            </div>
+        </div>
+    `;
 }
 
 // Probe the /health endpoint using no-cors to detect host reachability.
