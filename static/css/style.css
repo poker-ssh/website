@@ -608,3 +608,12 @@ a:focus, .copy-btn:focus { box-shadow: 0 0 0 3px rgba(38,171,69,0.12); }
 .button:hover img {
     filter: brightness(0.6) !important;  /* Darken the image on hover */
 }
+
+/* Centered status badge used on homepage */
+.status-badge {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0 18px 0;
+}
+.status-badge img { display: inline-block; }
+
