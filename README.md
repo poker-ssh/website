@@ -11,6 +11,8 @@ To have a nice place to show and explain our game, we created a website for our 
 - Help players rules of poker
 - Show part of our story in why we made the game
 - To have a nice place to share our game to the world.
+- To show people the status of the server for the game
+- An external link to a website with the status of the servers
 
 ## Poker Over SSH Game
 
