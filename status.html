@@ -25,6 +25,7 @@
                 <a href="guide.html" class="button">GUIDE</a>
                 <a href="about.html" class="button">ABOUT</a>
                 <a href="status.html" class="button base">STATUS</a>
+                <a href="https://poker-status.qincai.xyz/status/pos-nest" class="button"><img src="assets/Uptime-Kuma.svg">STATUS SITE</a>
                 <!-- removed inline nav GitHub icon; site corner will be used instead -->
             </div>
         </div>
@@ -43,7 +44,7 @@
         <h1>Status</h1>
         <h3>The status of the game server for Poker Over SSH</h3>
         
-        <div id="server-status-container">
+        <div id="server-status-container" class="info-box">
             <div id="server-status-display">
                 <div class="status-loading">🔄 Loading server status...</div>
             </div>
@@ -401,7 +402,7 @@
                     } else {
                         // For other errors, show the original error display
                         statusDisplay.innerHTML = `
-                            <div style="background: rgba(255, 100, 100, 0.1); border: 1px solid rgba(255, 100, 100, 0.3); padding: 10px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
+                            <div style="background: rgba(255, 100, 100, 0.1); border: 1px solid rgba(255, 100, 100, 0.3); padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
                                 <strong>⚠️ API Connection Issue</strong><br>
                                 <small>Unable to fetch live status data</small>
                             </div>
@@ -414,14 +415,28 @@
                             
                             <div class="status-details">
                                 <div class="status-item" style="grid-column: 1 / -1;">
-                                    <div class="status-item-title">Error</div>
+                                    <div class="status-item-title">Error Details</div>
                                     <div class="status-item-value error">
                                         ${error.message}
                                     </div>
                                 </div>
                                 
                                 <div class="status-item">
-                                    <div class="status-item-title">Manual Check</div>
+                                    <div class="status-item-title">Error Type</div>
+                                    <div class="status-item-value">
+                                        Network or API Issue
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">Game Server Status</div>
+                                    <div class="status-item-value">
+                                        Unknown (cannot verify)
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item">
+                                    <div class="status-item-title">Manual API Check</div>
                                     <div class="status-item-value">
                                         <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
                                             View Health Endpoint →
@@ -430,15 +445,25 @@
                                 </div>
                                 
                                 <div class="status-item">
-                                    <div class="status-item-title">SSH Test Command</div>
+                                    <div class="status-item-title">Direct SSH Test</div>
                                     <div class="status-item-value">
                                         ssh play.poker.qincai.xyz -p 23456
+                                    </div>
+                                </div>
+                                
+                                <div class="status-item" style="grid-column: 1 / -1;">
+                                    <div class="status-item-title">Troubleshooting</div>
+                                    <div class="status-item-value">
+                                        1. Check your internet connection<br>
+                                        2. Try the manual API check above<br>
+                                        3. Test the game server directly with SSH
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="status-timestamp">
-                                Last attempt: ${new Date().toLocaleString()}
+                                Error occurred: ${new Date().toLocaleString()}<br>
+                                <small>Status monitoring will retry automatically</small>
                             </div>
                         `;
                     }

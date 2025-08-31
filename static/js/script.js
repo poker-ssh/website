@@ -38,7 +38,7 @@ async function fetchWithTimeout(resource, options = {}, timeout = 10000) {
     }
 }
 
-function typeWriter(element, initialSpeed = 20) {
+function typeWriter(element, initialSpeed = 8) {
     const originalText = element.textContent || element.innerText;
     
     // Get the original HTML content to preserve links and other elements
@@ -116,11 +116,11 @@ function typeWriter(element, initialSpeed = 20) {
                 let currentSpeed;
                 
                 if (elapsedTime > 3000) {
-                    currentSpeed = Math.max(5, initialSpeed * 0.2);
+                    currentSpeed = Math.max(2, initialSpeed * 0.3);
                 } else if (elapsedTime > 1500) {
-                    currentSpeed = Math.max(10, initialSpeed * 0.5);
+                    currentSpeed = Math.max(4, initialSpeed * 0.8);
                 } else if (elapsedTime > 500) {
-                    currentSpeed = Math.max(15, initialSpeed * 0.7);
+                    currentSpeed = Math.max(6, initialSpeed * 1.2);
                 } else {
                     currentSpeed = initialSpeed;
                 }
@@ -165,11 +165,11 @@ function typeWriter(element, initialSpeed = 20) {
             let currentSpeed;
             
             if (elapsedTime > 3000) {
-                currentSpeed = Math.max(5, initialSpeed * 0.2);
+                currentSpeed = Math.max(2, initialSpeed * 0.1);
             } else if (elapsedTime > 1500) {
-                currentSpeed = Math.max(10, initialSpeed * 0.5);
+                currentSpeed = Math.max(3, initialSpeed * 0.3);
             } else if (elapsedTime > 500) {
-                currentSpeed = Math.max(15, initialSpeed * 0.7);
+                currentSpeed = Math.max(5, initialSpeed * 0.6);
             } else {
                 currentSpeed = initialSpeed;
             }

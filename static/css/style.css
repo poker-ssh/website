@@ -143,7 +143,7 @@ div.info-box.stages {
 
 /* Unique heights for each guide section - calculated with 24px padding + (lines × 26px) */
 div.info-box.stages#terminology { height: 185px !important; } /* Terminology - 8 wrapped lines: 24 + (8 × 26) = 232px */
-div.info-box.stages#handrankings { height: 770px !important; } /* Hand Rankings - 29 lines: 24 + (29 × 26) = 778px */
+div.info-box.stages#handrankings { height: 798px !important; } /* Hand Rankings - 29 lines: 24 + (29 × 26) = 778px */
 div.info-box.stages#stages { height: 56px !important; } /* Stages - 2 lines: 24 + (2 × 26) = 76px */
 div.info-box.stages#preflop { height: 240px !important; } /* Pre-flop - 8 wrapped lines: 24 + (8 × 26) = 232px */
 div.info-box.stages#flop { height: 108px !important; } /* Flop - 3 wrapped lines: 24 + (3 × 26) = 102px */
@@ -286,7 +286,7 @@ div.header {
     min-height: 60px !important;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 }
 /*Box*/
 
@@ -297,11 +297,15 @@ div.header img {
     width: auto;
     margin-top: -30px;
     margin-bottom: -35px;
+    border: 2px solid #000000;  /* Black border around the favicon */
+    box-sizing: border-box;  /* Include border in the element's total width and height */
 }
 /*Image logo*/
 
 /*Box Section*/
 .logo-section {
+    position: absolute;
+    left: 10px;
     border-radius: 100px;
     display: flex;
     align-items: center;
@@ -470,13 +474,8 @@ div.header a.base::before {
 }
 
 #server-status-display {
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid rgba(38, 171, 69, 0.3);
-    border-radius: 12px;
-    padding: 30px;
     width: 100%;
     font-family: "Fira Code", monospace;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     color: rgb(255, 255, 255); /* Ensure all text is white by default */
 }
 
@@ -594,3 +593,18 @@ div.header a.base::before {
 
 /* small focus improvements for KBD users */
 a:focus, .copy-btn:focus { box-shadow: 0 0 0 3px rgba(38,171,69,0.12); }
+
+/* Style for button-out class and its image */
+.button img {
+    height: 35px !important;  /* Make the SVG much smaller */
+    width: auto !important;
+    vertical-align: middle;
+    margin-right: 10px !important;  /* Add some space between image and text */
+    transform: translateY(26px) !important;  /* Move up by half a pixel */
+    transition: filter 0.3s ease !important;  /* Smooth transition for hover effect */
+}
+
+/* Darken the image when hovering over the button */
+.button:hover img {
+    filter: brightness(0.6) !important;  /* Darken the image on hover */
+}
