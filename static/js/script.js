@@ -240,16 +240,49 @@ document.addEventListener('DOMContentLoaded', function() {
 /* -- Interactive enhancements -- */
 // Create small DOM controls: copy button, toast message, theme toggle (to-do)
 function createControls() {
-    // Copy button inside ssh-box
+    // Ensure ssh box exists
     const sshBox = document.querySelector('div.ssh-box');
-    if (sshBox && !sshBox.querySelector('.copy-btn')) {
-        const btn = document.createElement('button');
-        btn.className = 'copy-btn';
-        btn.type = 'button';
-        btn.title = 'Copy command to clipboard (or press C)';
-        btn.innerText = 'Copy';
-        btn.addEventListener('click', () => copySSH(sshBox));
-        sshBox.appendChild(btn);
+    if (sshBox) {
+        // Wire existing copy button (if present) or create one
+        let copyBtn = sshBox.querySelector('.copy-btn');
+        if (!copyBtn) {
+            copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.type = 'button';
+            copyBtn.title = 'Copy command to clipboard (or press C)';
+            copyBtn.innerText = 'Copy';
+            sshBox.appendChild(copyBtn);
+        }
+        if (!copyBtn._wired) {
+            copyBtn.addEventListener('click', (ev) => { ev.preventDefault(); copySSH(sshBox); });
+            copyBtn._wired = true;
+        }
+
+        // Make the code element clickable to copy (clicking code copies)
+        const sshCode = sshBox.querySelector('.ssh-cmd');
+        if (sshCode && !sshCode._wired) {
+            // allow keyboard activation
+            sshCode.setAttribute('tabindex', '0');
+            sshCode.setAttribute('role', 'button');
+            sshCode.addEventListener('click', (ev) => {
+                // ignore clicks on inner buttons/links
+                const tag = (ev.target && ev.target.tagName) || '';
+                if (tag === 'BUTTON' || tag === 'A') return;
+                ev.preventDefault();
+                copySSH(sshBox);
+            });
+            sshCode.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); copySSH(sshBox); }
+            });
+            sshCode._wired = true;
+        }
+    }
+
+    // Global Help button (may be outside ssh-box)
+    const helpBtnGlobal = document.querySelector('.help-btn');
+    if (helpBtnGlobal && !helpBtnGlobal._wired) {
+        helpBtnGlobal.addEventListener('click', (ev) => { ev.preventDefault(); showCopyModal(); });
+        helpBtnGlobal._wired = true;
     }
 
     // Toast element
