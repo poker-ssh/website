@@ -419,9 +419,9 @@ function createCopyModal() {
             <p class="kbd">Generate one with: <code>ssh-keygen -N "" -t ed25519</code> (and press ENTER at all prompts)</p>
             <p>If you see "Permission denied (publickey)" when connecting, ensure:</p>
             <ol>
-                <li>You are authorised to connect as your username (i.e. nobody with the same username has even connected to the server).</li>
-                <li>As above, you are not trying to impersonate, or connect as, another registered user.</li>
+                <li>You are authorised to connect using your username — do not attempt to impersonate or log in as another registered user.</li>
                 <li>Permissions on <code>~/.ssh</code> and files are correct (700 for dir, 600 for keys).</li>
+                <li><strong>If you are still having issues, try connecting using a different username:</strong> <code>ssh &lt;username&gt;@play.poker.qincai.xyz -p 23456</code></li>
             </ol>
             <div style="text-align:right; margin-top:12px;">
                 <button class="copy-help-dontshow">Close</button>
