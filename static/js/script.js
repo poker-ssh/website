@@ -261,6 +261,9 @@ function createControls() {
         document.body.appendChild(toast);
     }
 
+    // Ensure copy-help modal exists
+    createCopyModal();
+
 }
 
 function showToast(message, timeout = 2200) {
@@ -289,6 +292,15 @@ async function copySSH(sshBox) {
         ta.select();
         try { document.execCommand('copy'); showToast('SSH command copied to clipboard'); } catch (err) { showToast('Copy failed — select and copy manually'); }
         ta.remove();
+    }
+
+    // Show brief !HELP! whenever user copies the SSH command
+    // (about SSH key generation and Permission denied (publickey) troubleshooting)
+    try {
+        showCopyModal();
+    } catch (e) {
+        // If modal fails for some random reason, fail silently — copy already happened or user will see toast
+        console.warn('showCopyModal failed', e);
     }
 }
 
@@ -387,6 +399,71 @@ function bindCornerFallback() {
 // call corner binder as well
 window.addEventListener('load', bindCornerFallback);
 if (document.readyState === 'interactive' || document.readyState === 'complete') bindCornerFallback();
+
+// --- Copy-help modal helpers ---
+function createCopyModal() {
+    if (document.getElementById('copy-help-modal')) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'copy-help-modal';
+    modal.className = 'copy-help-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.style.display = 'none';
+
+    modal.innerHTML = `
+        <div class="copy-help-panel">
+            <button class="copy-help-close" aria-label="Close">✕</button>
+            <h3>SSH copy helper</h3>
+            <p>If you haven't connected with SSH before, make sure you have an SSH keypair set up on your machine.</p>
+            <p class="kbd">Generate one with: <code>ssh-keygen -N "" -t ed25519</code> (and press ENTER at all prompts)</p>
+            <p>If you see "Permission denied (publickey)" when connecting, ensure:</p>
+            <ol>
+                <li>You are authorised to connect as your username (i.e. nobody with the same username has even connected to the server).</li>
+                <li>As above, you are not trying to impersonate, or connect as, another registered user.</li>
+                <li>Permissions on <code>~/.ssh</code> and files are correct (700 for dir, 600 for keys).</li>
+            </ol>
+            <div style="text-align:right; margin-top:12px;">
+                <button class="copy-help-dontshow">Close</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // event delegation for close
+    modal.querySelectorAll('.copy-help-close, .copy-help-dontshow').forEach(btn => {
+        btn.addEventListener('click', () => hideCopyModal());
+    });
+
+    // click outside to close
+    modal.addEventListener('click', (ev) => {
+        if (ev.target === modal) hideCopyModal();
+    });
+}
+
+function showCopyModal() {
+    const modal = document.getElementById('copy-help-modal');
+    if (!modal) return;
+    modal.style.display = 'block';
+    // simple fade-in
+    requestAnimationFrame(() => modal.classList.add('open'));
+    // trap focus briefly
+    const focusTarget = modal.querySelector('.copy-help-dontshow') || modal.querySelector('.copy-help-close');
+    if (focusTarget) focusTarget.focus();
+    // auto-hide after 30s
+    clearTimeout(modal._hideTimer);
+    modal._hideTimer = setTimeout(() => hideCopyModal(), 30000);
+}
+
+function hideCopyModal() {
+    const modal = document.getElementById('copy-help-modal');
+    if (!modal) return;
+    modal.classList.remove('open');
+    // wait for CSS transition then hide
+    clearTimeout(modal._hideTimer);
+    setTimeout(() => { modal.style.display = 'none'; }, 220);
+}
 
 // Server Status Functionality
 async function checkServerStatus() {

@@ -464,6 +464,55 @@ div.header a.base::before {
 }
 .toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(-6px); }
 
+/* Copy-help modal styles */
+.copy-help-modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    z-index: 30000;
+    opacity: 0;
+    transition: opacity 180ms ease;
+}
+.copy-help-modal.open { opacity: 1; }
+.copy-help-panel {
+    background: linear-gradient(180deg, rgba(10,10,10,0.98), rgba(20,20,20,0.96));
+    border: 1px solid rgba(38,171,69,0.18);
+    padding: 18px;
+    border-radius: 10px;
+    width: 520px;
+    max-width: calc(100% - 40px);
+    color: #dfffdc;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    font-family: "Fira Code", monospace;
+}
+.copy-help-panel h3 { margin-top: 0; color: rgb(38,171,69); }
+.copy-help-panel .kbd code { background: rgba(255,255,255,0.02); padding: 4px 8px; border-radius: 6px; }
+.copy-help-close {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    background: transparent;
+    border: 0;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+}
+.copy-help-dontshow {
+    background: rgba(38,171,69,0.06);
+    border: 1px solid rgba(38,171,69,0.25);
+    color: rgb(38,171,69);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
 /* Server Status Display Styles */
 #server-status-container {
     display: flex;
