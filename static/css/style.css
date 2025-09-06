@@ -425,7 +425,7 @@ div.header a.base::before {
 /* interactive controls: copy button, toast, theme toggle (to-do) */
 .ssh-box { position: relative; }
 
-/* Help button: smaller and contrasting color */
+/* Help button */
 .help-btn {
     display: block;
     margin: 18px auto 12px auto;
@@ -446,7 +446,6 @@ div.header a.base::before {
 }
 .help-btn:hover, .help-btn:focus { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(30,144,255,0.22); }
 
-/* Revert copy button to compact style */
 .copy-btn {
     position: absolute;
     right: 12px;
