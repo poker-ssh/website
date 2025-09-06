@@ -480,6 +480,9 @@ div.header a.base::before {
     background: linear-gradient(180deg, rgba(10,10,10,0.85), rgba(18,18,18,0.95));
     border: 2px solid rgba(38,171,69,0.12);
     box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 18px rgba(38,171,69,0.02) inset;
+    /* Smoothly transition visual changes on hover (color, shadow, transform) */
+    transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
+    will-change: transform, box-shadow;
 }
 .ssh-box:hover { transform: translateY(-4px); box-shadow: 0 18px 60px rgba(0,0,0,0.65), 0 0 28px rgba(38,171,69,0.06) inset; }
 
@@ -491,6 +494,8 @@ div.header a.base::before {
     padding: 6px 8px;
     border-radius: 8px;
     cursor: pointer;
+    /* smooth transitions for background, shadow and slight transform */
+    transition: background 160ms ease, box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
 }
 .ssh-cmd:hover, .ssh-cmd:focus { background: rgba(38,171,69,0.04); box-shadow: 0 8px 30px rgba(38,171,69,0.06); transform: translateY(-1px); }
 
