@@ -454,7 +454,7 @@ function createCopyModal() {
             <ol>
                 <li>You are authorised to connect using your username — do not attempt to impersonate or log in as another registered user.</li>
                 <li>Permissions on <code>~/.ssh</code> and files are correct (700 for dir, 600 for keys).</li>
-                <li><strong>If you are still having issues, try connecting using a different username:</strong> <code>ssh &lt;username&gt;@play.poker.qincai.xyz -p 23456</code></li>
+                <li><strong>If you are still having issues, try connecting using a different username:</strong> <code>ssh &lt;username&gt;@play.poker.qincai.xyz</code></li>
             </ol>
             <div style="text-align:right; margin-top:12px;">
                 <button class="copy-help-dontshow">Close</button>
@@ -508,7 +508,7 @@ async function checkServerStatus() {
         statusElement.innerHTML = '<div class="info-box"><span class="status-loading">Checking server status...</span></div>';
         
         // Fetch server health with a robust timeout helper
-        const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
+        const response = await fetchWithTimeout('https://poker-ec2-health.qincai.xyz/health', {
             method: 'GET',
             headers: { 'Accept': 'application/json' }
         }, 10000);
@@ -530,7 +530,7 @@ async function checkServerStatus() {
                                 <p><strong>Status:</strong> ${data.status}</p>
                                 <p><strong>SSH Connection:</strong> ${data.probe.ssh_ok ? '✅ Working' : '❌ Failed'}</p>
                                 <p><strong>TCP Connection:</strong> ${data.probe.tcp_connect ? '✅ Working' : '❌ Failed'}</p>
-                                <p><strong>Connect with:</strong> <code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                                <p><strong>Connect with:</strong> <code>ssh play.poker.qincai.xyz</code></p>
                                 <p><strong>Last probe:</strong> ${lastProbe}</p>
                             </div>
                         </div>
@@ -563,8 +563,8 @@ async function checkServerStatus() {
                         <div class="status-info">
                             <p><strong>Error:</strong> HTTP ${response.status} — Server error</p>
                             <p>The status server is returning a ${response.status} error. The server is most likely down.</p>
-                            <p><strong>Manual check:</strong> <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255);">View health endpoint</a></p>
-                            <p><strong>Try connecting:</strong> <code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                            <p><strong>Manual check:</strong> <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255);">View health endpoint</a></p>
+                            <p><strong>Try connecting:</strong> <code>ssh play.poker.qincai.xyz</code></p>
                             <p><strong>Last checked:</strong> ${new Date().toLocaleTimeString()}</p>
                         </div>
                     </div>
@@ -597,8 +597,8 @@ async function checkServerStatus() {
                     <div class="status-info">
                         <p><strong>Error:</strong> ${errorMessage}</p>
                         ${isNetworkError ? `
-                            <p><strong>Manual check:</strong> <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255);">View health endpoint</a></p>
-                            <p><strong>Try connecting:</strong> <code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                            <p><strong>Manual check:</strong> <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255);">View health endpoint</a></p>
+                            <p><strong>Try connecting:</strong> <code>ssh play.poker.qincai.xyz</code></p>
                         ` : `
                             <p>The status endpoint returned an error. Server may be temporarily unavailable.</p>
                         `}
@@ -625,7 +625,7 @@ async function checkDetailedServerStatus() {
         
         // Fetch server health with a robust timeout helper and measure response time
         const startTime = Date.now();
-        const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
+        const response = await fetchWithTimeout('https://poker-ec2-health.qincai.xyz/health', {
             method: 'GET',
             headers: { 'Accept': 'application/json' }
         }, 10000);
@@ -711,8 +711,8 @@ async function checkDetailedServerStatus() {
                     <h4 style="color: rgb(255, 100, 100); margin-top: 20px;">🔎 Manual Checks</h4>
                     <div style="margin: 15px 0;">
                         <p><strong>Check the health endpoint:</strong></p>
-                        <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="display: inline-block; background: rgba(255, 100, 100, 0.1); padding: 12px; border-radius: 6px; color: rgb(100, 200, 255); text-decoration: none; font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255, 100, 100, 0.3);">https://status.prod.poker.qincai.xyz/health →</a>
-                        <p style="margin-top:10px;"><strong>Try direct SSH:</strong> <code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                        <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="display: inline-block; background: rgba(255, 100, 100, 0.1); padding: 12px; border-radius: 6px; color: rgb(100, 200, 255); text-decoration: none; font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255, 100, 100, 0.3);">https://poker-ec2-health.qincai.xyz/health →</a>
+                        <p style="margin-top:10px;"><strong>Try direct SSH:</strong> <code>ssh play.poker.qincai.xyz</code></p>
                     </div>
                     <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 100, 100, 0.2); font-size: 12px; color: rgb(150, 150, 150); text-align: center; font-style: italic;">
                         Last attempt: ${new Date().toLocaleString()}
@@ -759,10 +759,10 @@ async function checkDetailedServerStatus() {
                 <h4 style="color: rgb(255, 100, 100); margin-top: 20px;">� Manual Checks</h4>
                 <div style="margin: 15px 0;">
                     <p><strong>1. Test Direct Connection:</strong></p>
-                    <code style="display: block; background: rgba(255, 100, 100, 0.1); padding: 12px; border-radius: 6px; color: rgb(255, 150, 150); font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255, 100, 100, 0.3);">ssh play.poker.qincai.xyz -p 23456</code>
+                    <code style="display: block; background: rgba(255, 100, 100, 0.1); padding: 12px; border-radius: 6px; color: rgb(255, 150, 150); font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255, 100, 100, 0.3);">ssh play.poker.qincai.xyz</code>
                     
                     <p><strong>2. Check Health Endpoint:</strong></p>
-                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="display: inline-block; background: rgba(255, 100, 100, 0.1); padding: 12px; border-radius: 6px; color: rgb(100, 200, 255); text-decoration: none; font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255, 100, 100, 0.3);">https://status.prod.poker.qincai.xyz/health →</a>
+                    <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="display: inline-block; background: rgba(255, 100, 100, 0.1); padding: 12px; border-radius: 6px; color: rgb(100, 200, 255); text-decoration: none; font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255, 100, 100, 0.3);">https://poker-ec2-health.qincai.xyz/health →</a>
                 </div>
                 
                 <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 100, 100, 0.2); font-size: 12px; color: rgb(150, 150, 150); text-align: center; font-style: italic;">
@@ -790,7 +790,7 @@ async function fetchAndDisplayServerStatus() {
         `;
 
         console.log('About to fetch from API...');
-        const response = await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', {
+        const response = await fetchWithTimeout('https://poker-ec2-health.qincai.xyz/health', {
             mode: 'cors',
             headers: { 'Accept': 'application/json' }
         }, 10000);
@@ -817,7 +817,7 @@ async function fetchAndDisplayServerStatus() {
                         <div class="status-item">
                             <div class="status-item-title">Manual Check</div>
                             <div class="status-item-value">
-                                <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
                                     Visit Health Endpoint →
                                 </a>
                             </div>
@@ -825,7 +825,7 @@ async function fetchAndDisplayServerStatus() {
                         <div class="status-item">
                             <div class="status-item-title">SSH Connection Test</div>
                             <div class="status-item-value">
-                                ssh play.poker.qincai.xyz -p 23456
+                                ssh play.poker.qincai.xyz
                             </div>
                         </div>
                     </div>
@@ -871,7 +871,7 @@ async function fetchAndDisplayServerStatus() {
                             <div class="status-item">
                                 <div class="status-item-title">Manual Check</div>
                                 <div class="status-item-value">
-                                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                    <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
                                         Visit Health Endpoint →
                                     </a>
                                 </div>
@@ -879,7 +879,7 @@ async function fetchAndDisplayServerStatus() {
                             <div class="status-item">
                                 <div class="status-item-title">SSH Connection Test</div>
                                 <div class="status-item-value">
-                                    ssh play.poker.qincai.xyz -p 23456
+                                    ssh play.poker.qincai.xyz
                                 </div>
                             </div>
                         </div>
@@ -924,7 +924,7 @@ async function fetchAndDisplayServerStatus() {
                             <div class="status-item">
                                 <div class="status-item-title">Manual Check</div>
                                 <div class="status-item-value">
-                                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                                    <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
                                         Visit Health Endpoint →
                                     </a>
                                 </div>
@@ -932,7 +932,7 @@ async function fetchAndDisplayServerStatus() {
                             <div class="status-item">
                                 <div class="status-item-title">SSH Connection Test</div>
                                 <div class="status-item-value">
-                                    ssh play.poker.qincai.xyz -p 23456
+                                    ssh play.poker.qincai.xyz
                                 </div>
                             </div>
                         </div>
@@ -968,7 +968,7 @@ async function fetchAndDisplayServerStatus() {
                 <div class="status-item">
                     <div class="status-item-title">Manual Check</div>
                     <div class="status-item-value">
-                        <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
+                        <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">
                             Visit Health Endpoint →
                         </a>
                     </div>
@@ -977,7 +977,7 @@ async function fetchAndDisplayServerStatus() {
                 <div class="status-item">
                     <div class="status-item-title">SSH Connection Test</div>
                     <div class="status-item-value">
-                        ssh play.poker.qincai.xyz -p 23456
+                        ssh play.poker.qincai.xyz
                     </div>
                 </div>
             </div>
@@ -1003,10 +1003,10 @@ function tryAlternativeStatusFetch(statusDisplay, probeReachable = null) {
                 <p>The status host is reachable but the API request failed. This usually means the status server returned an HTTP error (for example: 502 Bad Gateway).</p>
                 <div style="margin-top:12px; padding:10px; border-radius:6px; background:rgba(240,240,240,0.04);">
                     <strong>Live API Status</strong><br>
-                    <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">Open health endpoint to see the HTTP error →</a>
+                    <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">Open health endpoint to see the HTTP error →</a>
                 </div>
                 <div style="margin-top:12px;">
-                    <p><strong>SSH Test Command</strong><br><code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                    <p><strong>SSH Test Command</strong><br><code>ssh play.poker.qincai.xyz</code></p>
                 </div>
                 <div style="margin-top:12px; color: #bbb; font-size: 13px;">
                     <p style="margin-top:6px;">Status check attempted: ${new Date().toLocaleString()}</p>
@@ -1026,13 +1026,13 @@ function tryAlternativeStatusFetch(statusDisplay, probeReachable = null) {
 
             <div style="margin-top:12px; padding:10px; border-radius:6px; background:rgba(240,240,240,0.04);">
                 <strong>Live API Status</strong><br>
-                <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">View Live Status JSON →</a>
+                <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255); text-decoration: none;">View Live Status JSON →</a>
             </div>
 
             <div style="margin-top:12px;">
                 <p><strong>Server Host</strong><br><code>play.poker.qincai.xyz</code></p>
                 <p><strong>Server Port</strong><br><code>23456</code></p>
-                <p><strong>SSH Test Command</strong><br><code>ssh play.poker.qincai.xyz -p 23456</code></p>
+                <p><strong>SSH Test Command</strong><br><code>ssh play.poker.qincai.xyz</code></p>
             </div>
 
             <div style="margin-top:12px; color: #bbb; font-size: 13px;">
@@ -1054,7 +1054,7 @@ function tryAlternativeStatusFetch(statusDisplay, probeReachable = null) {
 async function probeHealthEndpoint(timeout = 4000) {
     try {
         // use no-cors so the browser will attempt the request but return an opaque response if CORS is missing
-        await fetchWithTimeout('https://status.prod.poker.qincai.xyz/health', { mode: 'no-cors', cache: 'no-store' }, timeout);
+        await fetchWithTimeout('https://poker-ec2-health.qincai.xyz/health', { mode: 'no-cors', cache: 'no-store' }, timeout);
         return true;
     } catch (e) {
         return false;
@@ -1093,7 +1093,7 @@ function displayStatusData(data, statusDisplay, isMockData = false) {
         <div style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); padding: 10px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
             <strong>⚠️ Note:</strong> CORS policy prevents direct API access from local files.<br>
             <small>Status shown is for demonstration. For live data, serve this page from a web server or check 
-            <a href="https://status.prod.poker.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255);">the API directly</a></small>
+            <a href="https://poker-ec2-health.qincai.xyz/health" target="_blank" style="color: rgb(100, 200, 255);">the API directly</a></small>
         </div>
         ` : ''}
         
