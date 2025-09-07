@@ -673,14 +673,14 @@ async function checkDetailedServerStatus() {
                         </div>
                         <div style="padding: 8px 0; font-size: 16px;">
                             <strong style="color: ${statusColor};">Server Address:</strong> 
-                            <code style="color: rgb(120, 220, 255);">${data.probe?.host || 'play.poker.qincai.xyz'}:${data.probe?.port || 23456}</code>
+                            <code style="color: rgb(120, 220, 255);">${data.probe?.host || 'play.poker.qincai.xyz'}:${data.probe?.port || 22}</code>
                         </div>
                     </div>
                     
                     <h4 style="color: ${statusColor}; margin-top: 20px;">🔧 Connection Instructions</h4>
                     <div style="margin: 15px 0;">
                         <p>To connect to the poker server, use the following command:</p>
-                        <code style="display: block; background: rgba(${isHealthy ? '38, 171, 69' : '255, 180, 50'}, 0.1); padding: 12px; border-radius: 6px; color: rgb(${isHealthy ? '90, 221, 120' : '255, 200, 100'}); font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(${isHealthy ? '38, 171, 69' : '255, 180, 50'}, 0.3);">ssh ${data.probe?.host || 'play.poker.qincai.xyz'} -p ${data.probe?.port || 23456}</code>
+                        <code style="display: block; background: rgba(${isHealthy ? '38, 171, 69' : '255, 180, 50'}, 0.1); padding: 12px; border-radius: 6px; color: rgb(${isHealthy ? '90, 221, 120' : '255, 200, 100'}); font-family: 'Fira Code', monospace; font-size: 16px; margin: 10px 0; border: 1px solid rgba(${isHealthy ? '38, 171, 69' : '255, 180, 50'}, 0.3);">ssh ${data.probe?.host || 'play.poker.qincai.xyz'} -p ${data.probe?.port || 22}</code>
                     </div>
                     
                     <h4 style="color: ${statusColor}; margin-top: 20px;">⏱️ Probe Information</h4>
@@ -1031,7 +1031,7 @@ function tryAlternativeStatusFetch(statusDisplay, probeReachable = null) {
 
             <div style="margin-top:12px;">
                 <p><strong>Server Host</strong><br><code>play.poker.qincai.xyz</code></p>
-                <p><strong>Server Port</strong><br><code>23456</code></p>
+                <p><strong>Server Port</strong><br><code>22</code></p>
                 <p><strong>SSH Test Command</strong><br><code>ssh play.poker.qincai.xyz</code></p>
             </div>
 
