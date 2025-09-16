@@ -278,6 +278,107 @@ function createControls() {
         }
     }
 
+    // Wire the Copy Host Key button (if present)
+    const copyKeyBtn = document.getElementById('copySshBtn');
+    if (copyKeyBtn && !copyKeyBtn._wired) {
+        copyKeyBtn.addEventListener('click', async (ev) => {
+            ev.preventDefault();
+            const keyElem = document.getElementById('sshKey');
+            const text = keyElem ? (keyElem.innerText || keyElem.textContent || '').trim() : '';
+            if (!text) { showToast('No SSH key found to copy'); return; }
+
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('SSH host key copied to clipboard');
+            } catch (e) {
+                // fallback to execCommand
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); showToast('SSH host key copied to clipboard'); } catch (err) { showToast('Copy failed — select and copy manually'); }
+                ta.remove();
+            }
+        });
+        copyKeyBtn._wired = true;
+    }
+
+    // Compute and display SHA256 fingerprint for the public key, and wire toggle/copy for fingerprint
+    try {
+        const sshKeyElem = document.getElementById('sshKey');
+        const fingerprintElem = document.getElementById('sshFingerprint');
+        const toggleFullKeyBtn = document.getElementById('toggleFullKeyBtn');
+        const copyFingerprintBtn = document.getElementById('copyFingerprintBtn');
+
+        if (sshKeyElem && fingerprintElem) {
+            const pubKeyText = (sshKeyElem.innerText || sshKeyElem.textContent || '').trim();
+            // Extract the base64 blob from the SSH public key (format: <type> <base64> [comment])
+            const parts = pubKeyText.split(/\s+/);
+            if (parts.length >= 2) {
+                const b64 = parts[1];
+
+                // helper: convert base64 to ArrayBuffer
+                function base64ToArrayBuffer(base64) {
+                    const binary_string = atob(base64);
+                    const len = binary_string.length;
+                    const bytes = new Uint8Array(len);
+                    for (let i = 0; i < len; i++) {
+                        bytes[i] = binary_string.charCodeAt(i);
+                    }
+                    return bytes.buffer;
+                }
+
+                // Compute SHA256 and format like OpenSSH (base64, without padding)
+                (async () => {
+                    try {
+                        const keyBuf = base64ToArrayBuffer(b64);
+                        const hashBuf = await crypto.subtle.digest('SHA-256', keyBuf);
+                        const hashArr = new Uint8Array(hashBuf);
+                        // base64 encode
+                        let binary = '';
+                        for (let i = 0; i < hashArr.length; i++) binary += String.fromCharCode(hashArr[i]);
+                        let b64Hash = btoa(binary).replace(/=+$/, '');
+                        // OpenSSH shows: SHA256:<base64>
+                        const display = 'SHA256:' + b64Hash;
+                        fingerprintElem.textContent = display;
+
+                        // wire copy fingerprint button
+                        if (copyFingerprintBtn && !copyFingerprintBtn._wired) {
+                            copyFingerprintBtn.addEventListener('click', async (ev) => {
+                                ev.preventDefault();
+                                try { await navigator.clipboard.writeText(display); showToast('Fingerprint copied to clipboard'); }
+                                catch (e) { const ta=document.createElement('textarea'); ta.value=display; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); showToast('Fingerprint copied to clipboard');}catch(err){showToast('Copy failed — select manually');} ta.remove(); }
+                            });
+                            copyFingerprintBtn._wired = true;
+                        }
+
+                        // wire toggle to show/hide full key
+                        if (toggleFullKeyBtn && !toggleFullKeyBtn._wired) {
+                            toggleFullKeyBtn.addEventListener('click', (ev) => {
+                                ev.preventDefault();
+                                if (sshKeyElem.style.display === 'none' || sshKeyElem.style.display === '') {
+                                    sshKeyElem.style.display = 'block';
+                                    toggleFullKeyBtn.textContent = 'Hide full key';
+                                } else {
+                                    sshKeyElem.style.display = 'none';
+                                    toggleFullKeyBtn.textContent = 'Show full key';
+                                }
+                            });
+                            toggleFullKeyBtn._wired = true;
+                        }
+                    } catch (err) {
+                        fingerprintElem.textContent = 'unable to compute fingerprint';
+                        console.warn('Fingerprint compute failed', err);
+                    }
+                })();
+            } else {
+                fingerprintElem.textContent = 'invalid public key format';
+            }
+        }
+    } catch (err) {
+        console.warn('Fingerprint wiring failed', err);
+    }
+
     // Global Help button (may be outside ssh-box)
     const helpBtnGlobal = document.querySelector('.help-btn');
     if (helpBtnGlobal && !helpBtnGlobal._wired) {
