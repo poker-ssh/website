@@ -557,6 +557,7 @@ function createCopyModal() {
                 <li>Permissions on <code>~/.ssh</code> and files are correct (700 for dir, 600 for keys).</li>
                 <li><strong>If you are still having issues, try connecting using a different username:</strong> <code>ssh &lt;username&gt;@play.poker.qincai.xyz</code></li>
             </ol>
+            <p><i>Or if you are too lazy to generate a keypair, you can connect with:</i> <code>ssh guest@play.poker.qincai.xyz</code></p>
             <div style="text-align:right; margin-top:12px;">
                 <button class="copy-help-dontshow">Close</button>
             </div>
