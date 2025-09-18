@@ -508,6 +508,33 @@ div.header a.base::before {
 }
 .ssh-cmd:hover, .ssh-cmd:focus { background: rgba(38,171,69,0.04); box-shadow: 0 8px 30px rgba(38,171,69,0.06); transform: translateY(-1px); }
 
+/* Guest hint styling - small, elegant, and subtle */
+.ssh-guest-note {
+    display: block;
+    margin-top: 6px;
+    color: #a8bdb0;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    text-align: left;
+}
+.ssh-guest-note i { color: #8fb89a; font-style: italic; font-weight: 500; }
+.ssh-guest-cmd {
+    display: inline-block;
+    margin-left: 8px;
+    font-family: "Fira Code", monospace;
+    background: rgba(255,255,255,0.03);
+    color: #dfffe6;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(38,171,69,0.08);
+    font-size: 0.95rem;
+}
+
+@media (max-width: 720px) {
+    .ssh-guest-note { font-size: 0.9rem; }
+    .ssh-cmd { font-size: 1rem; }
+}
+
 @keyframes pulse-glow {
     0% { box-shadow: 0 6px 20px rgba(38,171,69,0.12), 0 0 0 0 rgba(38,171,69,0.06); }
     50% { box-shadow: 0 16px 48px rgba(38,171,69,0.22), 0 0 30px rgba(38,171,69,0.10); }
