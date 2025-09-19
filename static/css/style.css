@@ -510,22 +510,26 @@ div.header a.base::before {
 
 /* Guest hint styling - small, elegant, and subtle */
 .ssh-guest-note {
-    display: block;
-    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* center horizontally */
+    gap: 10px;
+    margin: 12px auto 0 auto; /* space above and center container */
     color: #a8bdb0;
     font-size: 0.95rem;
     line-height: 1.2;
-    text-align: left;
+    text-align: center;
+    max-width: 720px;
+    padding: 4px 12px;
 }
-.ssh-guest-note i { color: #8fb89a; font-style: italic; font-weight: 500; }
+.ssh-guest-note i { color: #8fb89a; font-style: italic; font-weight: 500; margin: 0; }
 .ssh-guest-cmd {
     display: inline-block;
-    margin-left: 8px;
     font-family: "Fira Code", monospace;
     background: rgba(255,255,255,0.03);
     color: #dfffe6;
-    padding: 4px 8px;
-    border-radius: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
     border: 1px solid rgba(38,171,69,0.08);
     font-size: 0.95rem;
 }
