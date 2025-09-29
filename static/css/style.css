@@ -729,21 +729,10 @@ div.header a.base::before {
     }
 }
 
-/* Responsive */
-@media (max-width: 720px) {
-    h1 { font-size: 42px; margin-top: 80px; }
-    h2 { font-size: 20px; }
-    h3 { font-size: 18px; }
-    div.info-box { width: calc(100% - 48px); }
-    div.ssh-box { width: calc(100% - 48px); }
-    div.header img { height: 56px; margin-top: 0; margin-bottom: 0; }
-    .copy-btn { right: 8px; padding: 6px 8px; }
-}
-
-/* small focus improvements for KBD users */
+/* small focus improvements for keryboard users */
 a:focus, .copy-btn:focus { box-shadow: 0 0 0 3px rgba(38,171,69,0.12); }
 
-/* Style for button-out class and its image */
+/* Style for button-out class and image */
 .button img {
     height: 35px !important;  /* Make the SVG much smaller */
     width: auto !important;
@@ -758,7 +747,7 @@ a:focus, .copy-btn:focus { box-shadow: 0 0 0 3px rgba(38,171,69,0.12); }
     filter: brightness(0.6) !important;  /* Darken the image on hover */
 }
 
-/* Centered status badge used on homepage */
+/* Centered status badge on homepage */
 .status-badge {
     display: flex;
     justify-content: center;
@@ -779,3 +768,15 @@ a:focus, .copy-btn:focus { box-shadow: 0 0 0 3px rgba(38,171,69,0.12); }
 .ssh-key-notice h3 { margin: 0 0 6px 0; font-size: 1.05rem; }
 .ssh-key-block { font-family: monospace; white-space: pre-wrap; background: #fff; padding:8px; border-radius:4px; overflow:auto; }
 .ssh-copy-btn { margin-top:8px; display:inline-block; padding:6px 10px; background:#2d7ef7; color:#fff; border-radius:4px; text-decoration:none; cursor:pointer; }
+
+
+/* Responsive */
+@media (max-width: 720px) {
+    h1 { font-size: 42px; margin-top: 80px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 18px; }
+    div.info-box { width: calc(100% - 48px); }
+    div.ssh-box { width: calc(100% - 48px); }
+    div.header img { height: 56px; margin-top: 0; margin-bottom: 0; }
+    .copy-btn { right: 8px; padding: 6px 8px; }
+}
