@@ -1,4 +1,5 @@
 let isInitialized = false;
+let activeTimeouts = [];
 
 function typeWriter(element, initialSpeed = 8) {
     const originalText = element.textContent || element.innerText;
